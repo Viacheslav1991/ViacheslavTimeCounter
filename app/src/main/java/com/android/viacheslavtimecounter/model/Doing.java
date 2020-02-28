@@ -10,6 +10,15 @@ public class Doing {
     private int mTotalTimeInt;
     private Calendar mDate;
 
+
+
+    public Doing(String title, int color) {
+        mId = UUID.randomUUID();
+        mTitle = title;
+        mColor = color;
+        mTotalTimeInt = 0;
+    }
+
     public UUID getId() {
         return mId;
     }

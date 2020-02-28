@@ -6,7 +6,9 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 
-public class CounterListActivity extends AppCompatActivity {
+import com.android.viacheslavtimecounter.model.Doing;
+
+public class CounterListActivity extends AppCompatActivity implements CounterListFragment.Callbacks{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,5 +23,13 @@ public class CounterListActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onDoingNameSelected(Doing doing) {
+        Fragment counterFragment = CounterFragment.newInstance(doing.getId());
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.counter_container, counterFragment)
+                .commit();
     }
 }

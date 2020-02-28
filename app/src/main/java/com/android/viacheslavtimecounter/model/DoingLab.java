@@ -26,8 +26,7 @@ public class DoingLab {
 
         //random doings
         for (int i = 0; i < 7; i++) {
-            Doing doing = new Doing();
-            doing.setTitle(("Doing number " + i));
+            Doing doing = new Doing(("Doing number " + i), 0);
             doing.setDate(new GregorianCalendar());
             Random rnd = new Random();
             doing.setTotalTimeInt((rnd.nextInt(86400)));
@@ -51,7 +50,7 @@ public class DoingLab {
 
     public void updateDoing(Doing doing) {
         for (int i = 0; i < mDoings.size(); i++) {
-            if (compareDoingsByDate(mDoings.get(i), doing)) {
+            if (compareDoingsByTitleAndDate(mDoings.get(i), doing)) {
                 mDoings.set(i, doing);
             }
         }
@@ -80,7 +79,7 @@ public class DoingLab {
         return mDoings;
     }
 
-    private boolean compareDoingsByDate(Doing doing1, Doing doing2) {
+    private boolean compareDoingsByTitleAndDate(Doing doing1, Doing doing2) {
         if (doing1.getTitle().equals(doing2.getTitle())
                 && TimeHelper.compareDate(doing1.getDate(), doing2.getDate())) {
             return true;

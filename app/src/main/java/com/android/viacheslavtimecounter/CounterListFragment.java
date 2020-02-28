@@ -1,5 +1,6 @@
 package com.android.viacheslavtimecounter;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
+import com.android.viacheslavtimecounter.model.DoingLab;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,8 +27,17 @@ public class CounterListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private CountAdapter mCountAdapter;
     private FloatingActionButton fab;
-//    private Callbacks mCallbacks;
+    private Callbacks mCallbacks;
 
+    public interface Callbacks {
+        void onDoingNameSelected(Doing doing);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,7 +46,12 @@ public class CounterListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         fab = view.findViewById(R.id.fab);
-//        fab.setOnClickListener(view1 -> mCallbacks.onNewItemEmployments());
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         updateUI();
         return view;
     }
@@ -88,6 +104,7 @@ public class CounterListFragment extends Fragment {
         private TextView mTotalTimeTextView;
         private View mView;
         private DoingName mDoingName;
+        private Doing mDoing;
 
         public CountHolder(@NonNull View itemView) {
             super(itemView);
@@ -104,12 +121,12 @@ public class CounterListFragment extends Fragment {
             mDoingName = doingName;
             mView.setBackgroundColor(doingName.getColor());
             mTitleTextView.setText(mDoingName.getTitle());
-            Doing doing = DayStatisticListDoingsLab
+            mDoing = DayStatisticListDoingsLab
                     .getDayStatisticListDoingsLab(getActivity())
                     .getDayStatisticListDoings(new GregorianCalendar())
                     .getDoing(mDoingName.getTitle()); //get today's doing(may be move to adapter?)
-            if (doing != null) {
-                mTotalTimeTextView.setText(TimeHelper.getTime(doing.getTotalTimeInt()));
+            if (mDoing != null) {
+                mTotalTimeTextView.setText(TimeHelper.getTime(mDoing.getTotalTimeInt()));
             } else {
                 mTotalTimeTextView.setText(TimeHelper.getTime(0));
             }
@@ -117,6 +134,11 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
+            if (mDoing == null) {
+                mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
+                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
+            }
+            mCallbacks.onDoingNameSelected(mDoing);
         }
 
         @Override
