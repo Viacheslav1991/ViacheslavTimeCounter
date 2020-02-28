@@ -1,0 +1,19 @@
+<resources>
+<string name="app_name">MyTimeCounter</string>
+<string name="submit">MyFAB</string>
+<string name="total_time">Total time</string>
+<string name="current_time">Current time</string>
+<string name="new_employment">New employment</string>
+<string name="current_time_is">Current time: %1$s</string>
+<string name="total_time_is">Total time: %1$s</string>
+<string name="enter_name_of_new_employment">Enter name of new employment</string>
+<string name="ok">OK</string>
+<string name="cancel">Cancel</string>
+<string name="select_color">Select color</string>
+<string name="delete">delete</string>
+<string name="change">change</string>
+<string name="show_statistic">Show statistic</string>
+<string name="date_picker_title">Date of list:</string>
+
+
+    </resources>
