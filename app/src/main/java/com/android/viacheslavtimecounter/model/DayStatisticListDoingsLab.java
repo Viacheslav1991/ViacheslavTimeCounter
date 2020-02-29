@@ -2,12 +2,15 @@ package com.android.viacheslavtimecounter.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 
 import com.android.viacheslavtimecounter.TimeHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 
 public class DayStatisticListDoingsLab {
     private static DayStatisticListDoingsLab sDayStatisticListDoingsLab;
@@ -21,6 +24,14 @@ public class DayStatisticListDoingsLab {
         mDayStatisticListDoingsList = new ArrayList<>(); //delete
 
 
+        for (int i = 0; i < 8; i++) { //add some today's doings
+            Doing doing = new Doing(("Doing number " + i), Color.BLUE);
+            Random rnd = new Random();
+            doing.setTotalTimeInt((rnd.nextInt(86400)));
+            getDayStatisticListDoings(new GregorianCalendar())
+                    .getDoings()
+                    .add(doing);
+        }
         //random doings
         /*for (int i = 0; i < 10; i++) {
             Doing doing = new Doing();
@@ -54,7 +65,7 @@ public class DayStatisticListDoingsLab {
                 return dayStatisticListDoings;
             }
         }
-        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings();
+        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext);
         addDayStatisticListDoings(dayStatisticListDoings);
         return dayStatisticListDoings;
     }
@@ -68,12 +79,14 @@ public class DayStatisticListDoingsLab {
     }//is it need?
 
     public void updateAllLists() {
+
+       /*
         List<Doing> doings = DoingLab.getDoingLab(mContext).getDoings();
         for (Doing doing : doings)
         {
             if (!getDayStatisticListDoings(doing.getDate()).getDoings().contains(doing)) {
                 getDayStatisticListDoings(doing.getDate()).addDoing(doing);
             }
-        }
+        }*/
     }
 }

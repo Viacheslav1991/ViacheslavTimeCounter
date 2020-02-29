@@ -6,9 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingLab;
 
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.UUID;
 
@@ -41,7 +43,10 @@ public class CounterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_counter, container, false);
 
         UUID doingID = (UUID) getArguments().getSerializable(ARG_DOING_ID);
-        mDoing = DoingLab.getDoingLab(getActivity()).getDoing(doingID);
+        mDoing = DayStatisticListDoingsLab
+                .getDayStatisticListDoingsLab(getActivity())
+                .getDayStatisticListDoings(new GregorianCalendar())
+                .getDoing(doingID);
 
         totalTime = mDoing.getTotalTimeInt();
         currentTime = 0;

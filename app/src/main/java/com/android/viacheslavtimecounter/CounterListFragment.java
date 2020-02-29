@@ -136,9 +136,14 @@ public class CounterListFragment extends Fragment {
         public void onClick(View v) {
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
-                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
+//                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
+//                mDoing.setTotalTimeInt(100);
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                        .getDayStatisticListDoings(new GregorianCalendar())
+                        .addDoing(mDoing);
             }
             mCallbacks.onDoingNameSelected(mDoing);
+            updateUI();
         }
 
         @Override
