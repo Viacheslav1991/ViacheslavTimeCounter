@@ -11,7 +11,6 @@ import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingLab;
 
 import java.util.GregorianCalendar;
-import java.util.Timer;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;

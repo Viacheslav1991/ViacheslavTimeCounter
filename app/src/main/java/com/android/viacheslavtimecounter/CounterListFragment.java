@@ -31,6 +31,8 @@ public class CounterListFragment extends Fragment {
 
     public interface Callbacks {
         void onDoingNameSelected(Doing doing);
+
+        void onNewDoingName();
     }
 
     @Override
@@ -49,7 +51,7 @@ public class CounterListFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mCallbacks.onNewDoingName();
             }
         });
         updateUI();
