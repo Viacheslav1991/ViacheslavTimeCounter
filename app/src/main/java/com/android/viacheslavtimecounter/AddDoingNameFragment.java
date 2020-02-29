@@ -15,10 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.viacheslavtimecounter.model.DoingName;
+import com.android.viacheslavtimecounter.model.DoingNameLab;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class AddDoingNameFragment extends DialogFragment {
@@ -26,11 +29,18 @@ public class AddDoingNameFragment extends DialogFragment {
     private EditText mTitleField;
     private Button selectColorButton;
     private ColorPicker mColorPicker;
+    private Callbacks mCallbacks;
+    private AlertDialog mAlertDialog;
+
+    public interface Callbacks {
+        void onDoingNameUpdated();
+    }
 
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        mCallbacks = (Callbacks) context;
     }
 
     @Override
@@ -41,7 +51,7 @@ public class AddDoingNameFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         final View view = LayoutInflater.from(getActivity())
                 .inflate(R.layout.dialog_new_employment, null);
 
@@ -91,34 +101,44 @@ public class AddDoingNameFragment extends DialogFragment {
                     }
                 });
 
-        return new AlertDialog.Builder(getActivity())
+        mAlertDialog = new AlertDialog.Builder(getActivity())
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
                     }
                 })
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mDoingName.getTitle() == null) {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("You should enter title!")
-                                    .setPositiveButton(android.R.string.ok, null)
-                                    .create()
-                                    .show();
-
-                        }
-                        /*else if (!change) {
-                            EmploymentLab.getInstance(getContext()).addItemListEmployment(mListEmploymentsItem);
-                        }*/
-                    }
-                })
+                .setPositiveButton(android.R.string.ok, null)
                 .setView(view)
                 .create();
 
+        mAlertDialog.show();
+
+        mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDoingName.getTitle() == null) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("You should enter title!")
+                            .setPositiveButton(android.R.string.ok, null)
+                            .create()
+                            .show();
+
+                } else {
+                    DoingNameLab.getDoingNameLab(getActivity()).addDoingName(mDoingName);
+                    mAlertDialog.cancel();                }
+            }
+        });
+        return mAlertDialog;
 
     }
 
 
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks.onDoingNameUpdated();
+        mCallbacks = null;
+    }
 }

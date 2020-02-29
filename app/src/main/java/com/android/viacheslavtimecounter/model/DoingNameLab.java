@@ -23,7 +23,7 @@ public class DoingNameLab {
         mDoingNames = new ArrayList<>(); //delete
 
         // add random doing names
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 7; i++) {
             DoingName doingName = new DoingName();
             doingName.setTitle(("Doing number " + i));
             Random rnd = new Random();
