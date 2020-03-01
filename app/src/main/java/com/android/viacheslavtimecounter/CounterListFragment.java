@@ -1,15 +1,20 @@
 package com.android.viacheslavtimecounter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
-import com.android.viacheslavtimecounter.model.DoingLab;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -22,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 // update statistic before opening of one!!!!!!!!!!!!!!!!!!!
 public class CounterListFragment extends Fragment {
     private RecyclerView mRecyclerView;
@@ -33,12 +39,40 @@ public class CounterListFragment extends Fragment {
         void onDoingNameSelected(Doing doing);
 
         void onNewDoingName();
+
+        void onChangeDoingName(String title);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_count_list, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.show_statistic:
+//                DailyEmploymentListLab.getInstance(getActivity()).updateLists();
+                Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
     @Nullable
     @Override
@@ -150,6 +184,32 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public boolean onLongClick(View v) {
+            Toast.makeText(getActivity(), "LongClicked", Toast.LENGTH_LONG).show();
+            PopupMenu popupMenu = new PopupMenu(getActivity(), v);
+            popupMenu.inflate(R.menu.doing_name_long_press_menu);
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.menu_item_delete:
+                            Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_LONG).show();
+                            DoingNameLab.getDoingNameLab(getActivity())
+                                    .deleteDoingName(mDoingName);
+                            updateUI();
+                            break;
+                        case R.id.menu_item_change:
+                            Toast.makeText(getActivity(), "Changed", Toast.LENGTH_LONG).show();
+//                            mCallbacks.onChangeItemEmployments(mItem.getTitle());
+                            mCallbacks.onChangeDoingName(mDoingName.getTitle());
+                            updateUI();
+                            break;
+                        default:
+                            break;
+                    }
+                    return false;
+                }
+            });
+            popupMenu.show();
             return false;
         }
     }

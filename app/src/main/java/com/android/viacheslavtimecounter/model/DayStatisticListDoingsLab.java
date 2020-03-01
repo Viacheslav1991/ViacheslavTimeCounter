@@ -32,6 +32,18 @@ public class DayStatisticListDoingsLab {
                     .getDoings()
                     .add(doing);
         }
+/*
+        for (int i = 0; i < 8; i++) { //add some today's doings
+            Doing doing = new Doing(("Doing number " + i), Color.BLUE);
+            Random rnd = new Random();
+            doing.setTotalTimeInt((rnd.nextInt(86400)));
+            Calendar calendar = new GregorianCalendar();
+            calendar.set(Calendar.DAY_OF_MONTH, 2);
+            getDayStatisticListDoings(calendar)
+                    .getDoings()
+                    .add(doing);
+        }
+*/
         //random doings
         /*for (int i = 0; i < 10; i++) {
             Doing doing = new Doing();
@@ -46,7 +58,7 @@ public class DayStatisticListDoingsLab {
         mDoings.get(6).getDate().set(Calendar.DAY_OF_MONTH, 27);*/
     }
 
-    public static DayStatisticListDoingsLab getDayStatisticListDoingsLab (Context context) {
+    public static DayStatisticListDoingsLab getDayStatisticListDoingsLab(Context context) {
         if (sDayStatisticListDoingsLab == null) {
             sDayStatisticListDoingsLab = new DayStatisticListDoingsLab(context);
             sDayStatisticListDoingsLab.updateAllLists();
@@ -61,13 +73,21 @@ public class DayStatisticListDoingsLab {
     public DayStatisticListDoings getDayStatisticListDoings(Calendar date) {
         for (DayStatisticListDoings dayStatisticListDoings : mDayStatisticListDoingsList
         ) {
-            if (TimeHelper.compareDate(dayStatisticListDoings.getDate(),date)) {
+            if (TimeHelper.compareDate(dayStatisticListDoings.getDate(), date)) {
                 return dayStatisticListDoings;
             }
         }
         DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext);
         addDayStatisticListDoings(dayStatisticListDoings);
         return dayStatisticListDoings;
+    }
+
+    public DayStatisticListDoings getDayStatisticListDoings(Integer i) {
+        return mDayStatisticListDoingsList.get(i);
+    }
+
+    public int getSize() {
+        return mDayStatisticListDoingsList.size();
     }
 
     public void updateDoing(Doing doing) {
@@ -77,6 +97,7 @@ public class DayStatisticListDoingsLab {
     public void deleteDayStatisticListDoings(Calendar date) {
 
     }//is it need?
+
 
     public void updateAllLists() {
 

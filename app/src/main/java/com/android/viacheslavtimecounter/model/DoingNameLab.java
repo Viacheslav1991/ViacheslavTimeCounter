@@ -50,6 +50,7 @@ public class DoingNameLab {
                 mDoingNames.set(i, doingName);
             }
         }
+
     }
 
     public DoingName getDoingName(String title) {
@@ -62,13 +63,8 @@ public class DoingNameLab {
         return null;
     }
 
-    public void deleteDoingName(String title) {
-        for (DoingName doingName : mDoingNames
-        ) {
-            if (doingName.getTitle().equals(title)) {
-                mDoingNames.remove(doingName);
-            }
-        }
+    public void deleteDoingName(DoingName doingName) {
+        mDoingNames.remove(doingName);
     }
 
     public List<DoingName> getDoingNames() {

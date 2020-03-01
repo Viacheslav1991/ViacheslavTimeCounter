@@ -3,10 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.core.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/statistic_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </androidx.core.view.ViewPager>
+    </androidx.viewpager.widget.ViewPager>
 
 </LinearLayout>

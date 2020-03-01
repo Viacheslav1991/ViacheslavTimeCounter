@@ -11,6 +11,7 @@ import com.android.viacheslavtimecounter.model.Doing;
 public class CounterListActivity extends AppCompatActivity implements CounterListFragment.Callbacks, AddDoingNameFragment.Callbacks{
 
     private static final String NEW_DOING_NAME = "new_doing_name";
+    private static final String CHANGE_DOING_NAME = "change_doing_name";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,13 @@ public class CounterListActivity extends AppCompatActivity implements CounterLis
         FragmentManager manager = getSupportFragmentManager();
         AddDoingNameFragment dialog = new AddDoingNameFragment();
         dialog.show(manager, NEW_DOING_NAME);
+    }
+
+    @Override
+    public void onChangeDoingName(String title) {
+        FragmentManager manager = getSupportFragmentManager();
+        AddDoingNameFragment dialog = AddDoingNameFragment.newInstance(title);
+        dialog.show(manager, CHANGE_DOING_NAME);
     }
 
     @Override

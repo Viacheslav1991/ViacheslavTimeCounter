@@ -17,10 +17,9 @@ public class DayStatisticListDoings {
 
     public DayStatisticListDoings(Context context) {
         mDate = new GregorianCalendar();
-        mDoings = new ArrayList<>();
+        mDoings = new ArrayList<>();//download here doings from DB?
         mContext = context;
     }
-
 
     public Calendar getDate() {
         return mDate;
@@ -52,7 +51,7 @@ public class DayStatisticListDoings {
 
     public void updateDoing(Doing doing) {
         for (int i = 0; i < mDoings.size(); i++) {
-            if (compareDoingsByTitleAndDate(mDoings.get(i), doing)) {
+            if (mDoings.get(i).getId().equals(doing.getId())) {
                 mDoings.set(i, doing);
             }
         }
