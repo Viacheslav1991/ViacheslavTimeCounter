@@ -85,12 +85,7 @@ public class AddDoingNameFragment extends DialogFragment {
             mTitleField.setText(mDoingName.getTitle());
         }
 
-        mSelectColorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mColorPicker.show();
-            }
-        });
+        mSelectColorButton.setOnClickListener(v -> mColorPicker.show());
 
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override

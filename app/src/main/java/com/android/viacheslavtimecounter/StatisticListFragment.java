@@ -1,8 +1,10 @@
 package com.android.viacheslavtimecounter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import com.android.viacheslavtimecounter.model.Doing;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -38,6 +41,12 @@ public class StatisticListFragment extends Fragment {
 
     public interface Callbacks {
          void onDateSelected(Integer i);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
     }
 
     public static StatisticListFragment newInstance(Calendar date) {
@@ -72,6 +81,7 @@ public class StatisticListFragment extends Fragment {
         mDayStatisticListDoings = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
                 .getDayStatisticListDoings(date);
         mRecyclerView.setAdapter(new LineAdapter(mDayStatisticListDoings.getDoings()));     //change!
+
         return view;
     }
 

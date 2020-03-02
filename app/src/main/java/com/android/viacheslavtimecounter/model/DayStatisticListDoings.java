@@ -1,6 +1,7 @@
 package com.android.viacheslavtimecounter.model;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.android.viacheslavtimecounter.TimeHelper;
 
@@ -14,16 +15,20 @@ public class DayStatisticListDoings {
     private Calendar mDate;
     private List<Doing> mDoings;
     private Context mContext;
+    private SQLiteDatabase mDatabase;
 
-    public DayStatisticListDoings(Context context) {
-        mDate = new GregorianCalendar();
+
+
+    public DayStatisticListDoings(Context context, SQLiteDatabase database, Calendar date) {
+        mDate = date;
         mDoings = new ArrayList<>();//download here doings from DB?
         mContext = context;
+        mDatabase = database;
     }
 
     public Calendar getDate() {
         return mDate;
-    }
+    }//change
 
     public void addDoing(Doing doing) {
         mDoings.add(doing);

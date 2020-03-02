@@ -19,6 +19,10 @@ public class Doing {
         mTotalTimeInt = 0;
     }
 
+    public Doing(UUID id) {
+        mId = id;
+    }
+
     public UUID getId() {
         return mId;
     }

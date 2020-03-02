@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 
 import com.android.viacheslavtimecounter.TimeHelper;
+import com.android.viacheslavtimecounter.model.database.DoingBaseHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,10 +21,21 @@ public class DayStatisticListDoingsLab {
 
     private DayStatisticListDoingsLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = null; //change!
+        mDatabase = new DoingBaseHelper(mContext)
+                .getWritableDatabase();
         mDayStatisticListDoingsList = new ArrayList<>(); //delete
 
 
+        for (int i = 0; i < 8; i++) { //add some yesterday's doings
+            Doing doing = new Doing(("Doing number " + i), Color.GREEN);
+            Random rnd = new Random();
+            doing.setTotalTimeInt((rnd.nextInt(86400)));
+            Calendar calendar = new GregorianCalendar();
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            getDayStatisticListDoings(calendar)
+                    .getDoings()
+                    .add(doing);
+        }
         for (int i = 0; i < 8; i++) { //add some today's doings
             Doing doing = new Doing(("Doing number " + i), Color.BLUE);
             Random rnd = new Random();
@@ -31,19 +43,9 @@ public class DayStatisticListDoingsLab {
             getDayStatisticListDoings(new GregorianCalendar())
                     .getDoings()
                     .add(doing);
+
+
         }
-/*
-        for (int i = 0; i < 8; i++) { //add some today's doings
-            Doing doing = new Doing(("Doing number " + i), Color.BLUE);
-            Random rnd = new Random();
-            doing.setTotalTimeInt((rnd.nextInt(86400)));
-            Calendar calendar = new GregorianCalendar();
-            calendar.set(Calendar.DAY_OF_MONTH, 2);
-            getDayStatisticListDoings(calendar)
-                    .getDoings()
-                    .add(doing);
-        }
-*/
         //random doings
         /*for (int i = 0; i < 10; i++) {
             Doing doing = new Doing();
@@ -77,7 +79,8 @@ public class DayStatisticListDoingsLab {
                 return dayStatisticListDoings;
             }
         }
-        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext);
+//        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext);
+        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext, mDatabase, date);//it's only for test
         addDayStatisticListDoings(dayStatisticListDoings);
         return dayStatisticListDoings;
     }
@@ -97,7 +100,6 @@ public class DayStatisticListDoingsLab {
     public void deleteDayStatisticListDoings(Calendar date) {
 
     }//is it need?
-
 
     public void updateAllLists() {
 
