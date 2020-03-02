@@ -18,8 +18,6 @@ import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 
-import java.util.GregorianCalendar;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -63,7 +61,7 @@ public class AddDoingNameFragment extends DialogFragment {
         if (getArguments() != null && (title = (String) getArguments().getSerializable(ARG_DOING_NAME_TITLE)) != null) {
             mDoingName = DoingNameLab.getDoingNameLab(getActivity()).getDoingName(title);
             mDoing = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new GregorianCalendar())
+                    .getDayStatisticListDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle());
             mDoingNameExisted = true;
         } else {
@@ -151,7 +149,7 @@ public class AddDoingNameFragment extends DialogFragment {
                         mDoing.setTitle(mDoingName.getTitle());
                         mDoing.setColor(mDoingName.getColor());
                         DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                                .getDayStatisticListDoings(new GregorianCalendar())
+                                .getDayStatisticListDoings(new MyCalendar())
                                 .updateDoing(mDoing);
                     }
                     mAlertDialog.cancel();

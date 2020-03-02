@@ -19,7 +19,6 @@ import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -159,7 +158,7 @@ public class CounterListFragment extends Fragment {
             mTitleTextView.setText(mDoingName.getTitle());
             mDoing = DayStatisticListDoingsLab
                     .getDayStatisticListDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new GregorianCalendar())
+                    .getDayStatisticListDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle()); //get today's doing(may be move to adapter?)
             if (mDoing != null) {
                 mTotalTimeTextView.setText(TimeHelper.getTime(mDoing.getTotalTimeInt()));
@@ -175,7 +174,7 @@ public class CounterListFragment extends Fragment {
 //                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
 //                mDoing.setTotalTimeInt(100);
                 DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                        .getDayStatisticListDoings(new GregorianCalendar())
+                        .getDayStatisticListDoings(new MyCalendar())
                         .addDoing(mDoing);
             }
             mCallbacks.onDoingNameSelected(mDoing);

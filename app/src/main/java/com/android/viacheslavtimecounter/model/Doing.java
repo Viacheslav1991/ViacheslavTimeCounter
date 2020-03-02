@@ -55,14 +55,14 @@ public class Doing {
         mTotalTimeInt = totalTimeInt;
     }
 
-    public Calendar getDate() {
+  /*  public Calendar getDate() {
         return mDate;
     }
 
     public void setDate(Calendar date) {
         mDate = date;
     }
-
+*/
 
 
 

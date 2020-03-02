@@ -1,4 +1,4 @@
-package com.android.viacheslavtimecounter.model.database;
+package com.android.viacheslavtimecounter.model.database.doings;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
-import static com.android.viacheslavtimecounter.model.database.DoingDbSchema.*;
+import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
 public class DoingBaseHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;

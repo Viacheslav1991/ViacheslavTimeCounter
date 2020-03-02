@@ -4,12 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 
+import com.android.viacheslavtimecounter.MyCalendar;
 import com.android.viacheslavtimecounter.TimeHelper;
-import com.android.viacheslavtimecounter.model.database.DoingBaseHelper;
+import com.android.viacheslavtimecounter.model.database.doings.DoingBaseHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
@@ -30,21 +30,17 @@ public class DayStatisticListDoingsLab {
             Doing doing = new Doing(("Doing number " + i), Color.GREEN);
             Random rnd = new Random();
             doing.setTotalTimeInt((rnd.nextInt(86400)));
-            Calendar calendar = new GregorianCalendar();
+            Calendar calendar = new MyCalendar();
             calendar.set(Calendar.DAY_OF_MONTH, 1);
             getDayStatisticListDoings(calendar)
-                    .getDoings()
-                    .add(doing);
+                    .addDoing(doing);
         }
         for (int i = 0; i < 8; i++) { //add some today's doings
             Doing doing = new Doing(("Doing number " + i), Color.BLUE);
             Random rnd = new Random();
             doing.setTotalTimeInt((rnd.nextInt(86400)));
-            getDayStatisticListDoings(new GregorianCalendar())
-                    .getDoings()
-                    .add(doing);
-
-
+            getDayStatisticListDoings(new MyCalendar())
+                    .addDoing(doing);
         }
         //random doings
         /*for (int i = 0; i < 10; i++) {

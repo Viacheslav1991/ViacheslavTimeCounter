@@ -58,7 +58,7 @@ public class DatePickerFragment extends DialogFragment {
                         int year = mDatePicker.getYear();
                         int month = mDatePicker.getMonth();
                         int day = mDatePicker.getDayOfMonth();
-                        Date date = new GregorianCalendar(year, month, day).getTime();
+                        Date date = new MyCalendar(year, month, day).getTime();
                         sendResult(Activity.RESULT_OK, date);
                     }
                 })
@@ -78,7 +78,7 @@ public class DatePickerFragment extends DialogFragment {
         mButtonOk = v.findViewById(R.id.button_ok_date);
         mButtonOk.setOnClickListener(v1 -> {
             sendResult(Activity.RESULT_OK,
-                    new GregorianCalendar(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth())
+                    new MyCalendar(mDatePicker.getYear(), mDatePicker.getMonth(), mDatePicker.getDayOfMonth())
                             .getTime());
             getActivity().finish();
         });

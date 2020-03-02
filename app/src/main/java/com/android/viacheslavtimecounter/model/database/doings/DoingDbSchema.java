@@ -1,4 +1,4 @@
-package com.android.viacheslavtimecounter.model.database;
+package com.android.viacheslavtimecounter.model.database.doings;
 
 public class DoingDbSchema {
     public static final class DoingsTable {

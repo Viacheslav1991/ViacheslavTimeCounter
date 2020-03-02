@@ -1,16 +1,16 @@
-package com.android.viacheslavtimecounter.model.database;
+package com.android.viacheslavtimecounter.model.database.doings;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
 
 import com.android.viacheslavtimecounter.model.Doing;
+import com.android.viacheslavtimecounter.MyCalendar;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import static com.android.viacheslavtimecounter.model.database.DoingDbSchema.*;
+import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
 
 public class DoingCursorWrapper extends CursorWrapper {
@@ -31,9 +31,10 @@ public class DoingCursorWrapper extends CursorWrapper {
         int timeInt = getInt(getColumnIndex(DoingsTable.Cols.TOTALTIMEINT));
 
         Doing doing = new Doing(UUID.fromString(uuidString));
-        Calendar calendar = new GregorianCalendar();
+        Calendar calendar = new MyCalendar();
         calendar.setTimeInMillis(date);
-        doing.setDate(calendar);
+
+//        doing.setDate(calendar);
         doing.setTitle(title);
         doing.setColor(color);
         doing.setTotalTimeInt(timeInt);
