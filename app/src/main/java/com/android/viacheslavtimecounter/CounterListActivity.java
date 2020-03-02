@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.android.viacheslavtimecounter.model.Doing;
 
@@ -26,6 +31,8 @@ public class CounterListActivity extends AppCompatActivity implements CounterLis
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
+
+
     }
 
     @Override

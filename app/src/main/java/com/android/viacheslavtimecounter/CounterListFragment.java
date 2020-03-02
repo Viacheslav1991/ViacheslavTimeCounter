@@ -1,8 +1,12 @@
 package com.android.viacheslavtimecounter;
 
+import android.content.BroadcastReceiver;
+import android.content.BroadcastReceiver.PendingResult;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +37,8 @@ public class CounterListFragment extends Fragment {
     private CountAdapter mCountAdapter;
     private FloatingActionButton fab;
     private Callbacks mCallbacks;
+    private Intent currentIntentService;
+    private int mHolderPosition;
 
     public interface Callbacks {
         void onDoingNameSelected(Doing doing);
@@ -46,6 +52,22 @@ public class CounterListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BroadcastReceiver br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String totalTime = intent.getStringExtra((TimeService.EXTRA_DOING_CURRENT_TIME));
+                Log.i("CounterListFragment", totalTime);
+//                mTotalTimeTextView.setText(totalTime);
+                mCountAdapter.notifyItemChanged(mHolderPosition);
+                updateUI();
+            }
+        };
+        getActivity().registerReceiver(br, new IntentFilter(TimeService.STOPWATCH_BR));
     }
 
     @Override
@@ -73,6 +95,7 @@ public class CounterListFragment extends Fragment {
         }
 
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -115,13 +138,13 @@ public class CounterListFragment extends Fragment {
         public CountHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_count,
                     parent, false);
-
             return new CountHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull CountHolder holder, int position) {
             holder.bind(mDoingNames.get(position));
+            mHolderPosition = position;
         }
 
         @Override
@@ -143,6 +166,7 @@ public class CounterListFragment extends Fragment {
 
         public CountHolder(@NonNull View itemView) {
             super(itemView);
+
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -177,6 +201,16 @@ public class CounterListFragment extends Fragment {
                         .getDayStatisticListDoings(new MyCalendar())
                         .addDoing(mDoing);
             }
+
+            if (currentIntentService != null) {
+                getActivity().stopService(currentIntentService);
+            }
+
+
+            Intent intent = TimeService.newIntent(getActivity(), mDoing.getTotalTimeInt());
+            currentIntentService = intent;
+            getActivity().startService(intent);
+
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();
         }
@@ -211,5 +245,7 @@ public class CounterListFragment extends Fragment {
             popupMenu.show();
             return false;
         }
+
+
     }
 }

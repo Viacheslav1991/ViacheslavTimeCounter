@@ -1,6 +1,11 @@
 package com.android.viacheslavtimecounter;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +28,23 @@ public class CounterFragment extends Fragment {
     private TextView mDoingTextView;
     private TextView mTotalTimeTextView;
     private TextView mCurrentTimeTextView;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BroadcastReceiver br = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String totalTime = intent.getStringExtra((TimeService.EXTRA_DOING_CURRENT_TIME));
+                Log.i("CounterFragment", totalTime);
+                mTotalTimeTextView.setText(TimeHelper.getTime(Integer.parseInt(totalTime)));
+
+
+            }
+        };
+        getActivity().registerReceiver(br, new IntentFilter(TimeService.STOPWATCH_BR));
+
+    }
     
     public static CounterFragment newInstance(UUID doingID) {
 
