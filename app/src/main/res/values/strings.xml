@@ -1,8 +1,8 @@
 <resources>
 <string name="app_name">MyTimeCounter</string>
 <string name="submit">MyFAB</string>
-<string name="total_time">Total time</string>
-<string name="current_time">Current time</string>
+<string name="total_time">Total time :</string>
+<string name="current_time">Current time :</string>
 <string name="new_employment">New employment</string>
 <string name="current_time_is">Current time: %1$s</string>
 <string name="total_time_is">Total time: %1$s</string>
@@ -16,4 +16,4 @@
 <string name="date_picker_title">Date of list:</string>
 
 
-    </resources>
+</resources>

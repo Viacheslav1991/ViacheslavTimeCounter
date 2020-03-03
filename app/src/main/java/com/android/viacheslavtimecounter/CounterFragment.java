@@ -1,10 +1,12 @@
 package com.android.viacheslavtimecounter;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -29,23 +33,20 @@ public class CounterFragment extends Fragment {
     private TextView mTotalTimeTextView;
     private TextView mCurrentTimeTextView;
 
+    private MyTimerTask mTimerTask;
+    private Timer mTimer;
+    private Activity mActivity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mActivity = (Activity) context;
+    }
     @Override
     public void onResume() {
         super.onResume();
-        BroadcastReceiver br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String totalTime = intent.getStringExtra((TimeService.EXTRA_DOING_CURRENT_TIME));
-                Log.i("CounterFragment", totalTime);
-                mTotalTimeTextView.setText(TimeHelper.getTime(Integer.parseInt(totalTime)));
-
-
-            }
-        };
-        getActivity().registerReceiver(br, new IntentFilter(TimeService.STOPWATCH_BR));
-
     }
-    
+
     public static CounterFragment newInstance(UUID doingID) {
 
         Bundle args = new Bundle();
@@ -61,11 +62,13 @@ public class CounterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_counter, container, false);
 
+
         UUID doingID = (UUID) getArguments().getSerializable(ARG_DOING_ID);
         mDoing = DayStatisticListDoingsLab
                 .getDayStatisticListDoingsLab(getActivity())
                 .getDayStatisticListDoings(new MyCalendar())
                 .getDoing(doingID);
+
 
         totalTime = mDoing.getTotalTimeInt();
         currentTime = 0;
@@ -75,9 +78,39 @@ public class CounterFragment extends Fragment {
         mCurrentTimeTextView = view.findViewById(R.id.counterCurrentTimeTextView);
 
         mDoingTextView.setText(mDoing.getTitle());
-        mTotalTimeTextView.setText(getActivity().getString(R.string.total_time_is, TimeHelper.getTime(totalTime + currentTime)));
-        mCurrentTimeTextView.setText(getActivity().getString(R.string.current_time_is, TimeHelper.getTime(currentTime++)));
+        mTotalTimeTextView.setText(TimeHelper.getTime(totalTime + currentTime));
+        mCurrentTimeTextView.setText(TimeHelper.getTime(currentTime));
+
+        mTimer = new Timer();
+        mTimerTask = new MyTimerTask();
+        mTimer.scheduleAtFixedRate(mTimerTask, 0, 1000);
 
         return view;
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mDoing.setTotalTimeInt(currentTime + totalTime);
+        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                .getDayStatisticListDoings(new MyCalendar())
+                .updateDoing(mDoing);
+    }
+
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+
+            mActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mTotalTimeTextView.setText( TimeHelper.getTime(totalTime + currentTime));
+                    mCurrentTimeTextView.setText( TimeHelper.getTime(currentTime++));
+                }
+            });
+        }
+    }
+
 }

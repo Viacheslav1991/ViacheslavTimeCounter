@@ -138,7 +138,7 @@ public class DayStatisticListDoings {
         return values;
     }
 
-    private DoingCursorWrapper queryDoings(String whereClause, String[] whereArgs) {
+     DoingCursorWrapper queryDoings(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 DoingsTable.NAME,
                 null, // columns - null selects all columns

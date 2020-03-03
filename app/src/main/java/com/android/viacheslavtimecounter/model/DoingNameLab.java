@@ -27,6 +27,7 @@ public class DoingNameLab {
 //        mDoingNames = new ArrayList<>(); //delete
 
         // add random doing names
+/*
         for (int i = 0; i < 7; i++) {
             DoingName doingName = new DoingName();
             doingName.setTitle(("Doing number " + i));
@@ -35,6 +36,7 @@ public class DoingNameLab {
             doingName.setColor(color);
             addDoingName(doingName);
         }
+*/
 
     }
     public static DoingNameLab getDoingNameLab(Context context) {

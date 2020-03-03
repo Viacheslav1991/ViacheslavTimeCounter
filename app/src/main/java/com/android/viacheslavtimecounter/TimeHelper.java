@@ -1,10 +1,16 @@
 package com.android.viacheslavtimecounter;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class TimeHelper {
+    private static final SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+
+
+
     public static String getTime(int time) {
         String result = "";
         int hours = time / 3600;
@@ -31,8 +37,24 @@ public class TimeHelper {
     }
 
     public static String getDateString(Calendar calendar) {
-        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
         return format.format(calendar.getTime());
+
+        /*return String.valueOf(calendar.get(Calendar.YEAR)) + " " +
+                calendar.get(Calendar.MONTH) + " "
+                + calendar.get(Calendar.DAY_OF_MONTH);*/
+    }
+
+    public static Calendar getDateCalendar(String strDate) {
+
+        Date date = null;
+        try {
+            date = format.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
 
         /*return String.valueOf(calendar.get(Calendar.YEAR)) + " " +
                 calendar.get(Calendar.MONTH) + " "

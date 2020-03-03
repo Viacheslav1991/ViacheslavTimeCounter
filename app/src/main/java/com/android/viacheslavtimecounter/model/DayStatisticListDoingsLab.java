@@ -1,47 +1,50 @@
 package com.android.viacheslavtimecounter.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 
-import com.android.viacheslavtimecounter.MyCalendar;
 import com.android.viacheslavtimecounter.TimeHelper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingBaseHelper;
+import com.android.viacheslavtimecounter.model.database.doings.DoingCursorWrapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Set;
+
+import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
 public class DayStatisticListDoingsLab {
     private static DayStatisticListDoingsLab sDayStatisticListDoingsLab;
     private Context mContext;
     private SQLiteDatabase mDatabase;
     private List<DayStatisticListDoings> mDayStatisticListDoingsList;
+    private List<String> mDates;//use to know how many dates we have
 
     private DayStatisticListDoingsLab(Context context) {
         mContext = context.getApplicationContext();
         mDatabase = new DoingBaseHelper(mContext)
                 .getWritableDatabase();
         mDayStatisticListDoingsList = new ArrayList<>(); //delete
-
-
-        for (int i = 0; i < 8; i++) { //add some yesterday's doings
-            Doing doing = new Doing(("Doing number " + i), Color.GREEN);
+        updateDates();
+        /*for (int i = 0; i < 8; i++) { //add some yesterday's doings
             Random rnd = new Random();
+            Doing doing = new Doing(("Doing number " + i), Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
             doing.setTotalTimeInt((rnd.nextInt(86400)));
             Calendar calendar = new MyCalendar();
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.DAY_OF_MONTH, 2);
             getDayStatisticListDoings(calendar)
                     .addDoing(doing);
         }
         for (int i = 0; i < 8; i++) { //add some today's doings
-            Doing doing = new Doing(("Doing number " + i), Color.BLUE);
             Random rnd = new Random();
+            Doing doing = new Doing(("Doing number " + i), Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
             doing.setTotalTimeInt((rnd.nextInt(86400)));
             getDayStatisticListDoings(new MyCalendar())
                     .addDoing(doing);
-        }
+        }*/
         //random doings
         /*for (int i = 0; i < 10; i++) {
             Doing doing = new Doing();
@@ -59,7 +62,6 @@ public class DayStatisticListDoingsLab {
     public static DayStatisticListDoingsLab getDayStatisticListDoingsLab(Context context) {
         if (sDayStatisticListDoingsLab == null) {
             sDayStatisticListDoingsLab = new DayStatisticListDoingsLab(context);
-            sDayStatisticListDoingsLab.updateAllLists();
         }
         return sDayStatisticListDoingsLab;
     }
@@ -75,37 +77,53 @@ public class DayStatisticListDoingsLab {
                 return dayStatisticListDoings;
             }
         }
-//        DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext);
         DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext, mDatabase, date);//it's only for test
         addDayStatisticListDoings(dayStatisticListDoings);
         return dayStatisticListDoings;
     }
 
     public DayStatisticListDoings getDayStatisticListDoings(Integer i) {
-        return mDayStatisticListDoingsList.get(i);
+        List<String> dates = new ArrayList<>(mDates);
+        Calendar calendar = TimeHelper.getDateCalendar(dates.get(i));
+        return getDayStatisticListDoings(calendar);
     }
 
     public int getSize() {
-        return mDayStatisticListDoingsList.size();
+        return mDates.size();
     }
 
-    public void updateDoing(Doing doing) {
 
-    }//is it need?
+    private ArrayList<String> getDates() {
+        Set<String> setDates = new LinkedHashSet<>();
+        DoingCursorWrapper cursor = queryDoings(null, null);
 
-    public void deleteDayStatisticListDoings(Calendar date) {
-
-    }//is it need?
-
-    public void updateAllLists() {
-
-       /*
-        List<Doing> doings = DoingLab.getDoingLab(mContext).getDoings();
-        for (Doing doing : doings)
-        {
-            if (!getDayStatisticListDoings(doing.getDate()).getDoings().contains(doing)) {
-                getDayStatisticListDoings(doing.getDate()).addDoing(doing);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                setDates.add(cursor.getDate());
+                cursor.moveToNext();
             }
-        }*/
+        } finally {
+            cursor.close();
+        }
+        return new ArrayList<>(setDates);
     }
+
+    public void updateDates() {
+        mDates = getDates();
+    }
+
+    private DoingCursorWrapper queryDoings(String whereClause, String[] whereArgs) {
+        Cursor cursor = mDatabase.query(
+                DoingsTable.NAME,
+                null, // columns - null selects all columns
+                whereClause,
+                whereArgs,
+                null, // groupBy
+                null, // having
+                null  // orderBy
+        );
+        return new DoingCursorWrapper(cursor);
+    }
+
 }

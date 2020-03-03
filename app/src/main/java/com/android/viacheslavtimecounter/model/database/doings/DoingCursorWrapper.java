@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.CursorWrapper;
 
 
+import com.android.viacheslavtimecounter.TimeHelper;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.MyCalendar;
 
@@ -26,18 +27,24 @@ public class DoingCursorWrapper extends CursorWrapper {
     public Doing getDoing() {
         String uuidString = getString(getColumnIndex(DoingsTable.Cols.UUID));
         String title = getString(getColumnIndex(DoingsTable.Cols.TITLE));
-        long date = getLong(getColumnIndex(DoingsTable.Cols.DATE));
+        String date = getString(getColumnIndex(DoingsTable.Cols.DATE));//attention!!!
+
         int color = getInt(getColumnIndex(DoingsTable.Cols.COLOR));
         int timeInt = getInt(getColumnIndex(DoingsTable.Cols.TOTALTIMEINT));
 
         Doing doing = new Doing(UUID.fromString(uuidString));
         Calendar calendar = new MyCalendar();
-        calendar.setTimeInMillis(date);
+        calendar.setTimeInMillis(TimeHelper.getDateCalendar(date).getTimeInMillis());
 
 //        doing.setDate(calendar);
         doing.setTitle(title);
         doing.setColor(color);
         doing.setTotalTimeInt(timeInt);
         return doing;
+    }
+
+    public String getDate() {
+        String date = getString(getColumnIndex(DoingsTable.Cols.DATE));
+        return date;
     }
 }

@@ -54,21 +54,6 @@ public class CounterListFragment extends Fragment {
         mCallbacks = (Callbacks) context;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        BroadcastReceiver br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String totalTime = intent.getStringExtra((TimeService.EXTRA_DOING_CURRENT_TIME));
-                Log.i("CounterListFragment", totalTime);
-//                mTotalTimeTextView.setText(totalTime);
-                mCountAdapter.notifyItemChanged(mHolderPosition);
-                updateUI();
-            }
-        };
-        getActivity().registerReceiver(br, new IntentFilter(TimeService.STOPWATCH_BR));
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,7 +129,7 @@ public class CounterListFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull CountHolder holder, int position) {
             holder.bind(mDoingNames.get(position));
-            mHolderPosition = position;
+
         }
 
         @Override
@@ -166,7 +151,6 @@ public class CounterListFragment extends Fragment {
 
         public CountHolder(@NonNull View itemView) {
             super(itemView);
-
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -193,6 +177,7 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
+            mHolderPosition = getAdapterPosition();
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
 //                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
@@ -202,14 +187,13 @@ public class CounterListFragment extends Fragment {
                         .addDoing(mDoing);
             }
 
-            if (currentIntentService != null) {
+            /*if (currentIntentService != null) {
                 getActivity().stopService(currentIntentService);
             }
 
-
             Intent intent = TimeService.newIntent(getActivity(), mDoing.getTotalTimeInt());
             currentIntentService = intent;
-            getActivity().startService(intent);
+            getActivity().startService(intent);*/
 
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();
