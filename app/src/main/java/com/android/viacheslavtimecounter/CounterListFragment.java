@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -105,6 +106,7 @@ public class CounterListFragment extends Fragment {
         });
 
         if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
+
             Doing doing = DayStatisticListDoingsLab
                     .getDayStatisticListDoingsLab(getActivity())
                     .getDayStatisticListDoings(new MyCalendar())

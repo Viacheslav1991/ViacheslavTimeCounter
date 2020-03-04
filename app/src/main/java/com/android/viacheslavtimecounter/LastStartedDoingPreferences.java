@@ -31,6 +31,9 @@ public class LastStartedDoingPreferences {
     public static UUID getStartedDoingID(Context context) {
         String stringID = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(PREF_DOING_ID, null);
+        if (stringID == null) {
+            return null;
+        }
         return UUID.fromString(stringID);
     }
 
