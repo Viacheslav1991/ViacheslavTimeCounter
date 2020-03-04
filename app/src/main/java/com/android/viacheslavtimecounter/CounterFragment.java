@@ -1,13 +1,8 @@
 package com.android.viacheslavtimecounter;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +43,6 @@ public class CounterFragment extends Fragment {
     }
 
     public static CounterFragment newInstance(UUID doingID) {
-
         Bundle args = new Bundle();
         args.putSerializable(ARG_DOING_ID, doingID);
 
@@ -61,17 +55,21 @@ public class CounterFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_counter, container, false);
-
-
         UUID doingID = (UUID) getArguments().getSerializable(ARG_DOING_ID);
+
+
         mDoing = DayStatisticListDoingsLab
                 .getDayStatisticListDoingsLab(getActivity())
                 .getDayStatisticListDoings(new MyCalendar())
                 .getDoing(doingID);
+        currentTime = 0;
 
+        if (mDoing.getId().equals(LastStartedDoingPreferences.getStartedDoingID(mActivity))) {//if it was after recreate
+            currentTime = (int) (((System.currentTimeMillis()) - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+        }
 
         totalTime = mDoing.getTotalTimeInt();
-        currentTime = 0;
+
 
         mDoingTextView = view.findViewById(R.id.counterTitleTextView);
         mTotalTimeTextView = view.findViewById(R.id.counterTotalTimeTextView);

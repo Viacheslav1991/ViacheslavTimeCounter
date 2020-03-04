@@ -28,7 +28,7 @@ public class DayStatisticListDoingsLab {
         mDatabase = new DoingBaseHelper(mContext)
                 .getWritableDatabase();
         mDayStatisticListDoingsList = new ArrayList<>(); //delete
-        updateDates();
+        updateStatisticDates();
         /*for (int i = 0; i < 8; i++) { //add some yesterday's doings
             Random rnd = new Random();
             Doing doing = new Doing(("Doing number " + i), Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
@@ -109,7 +109,7 @@ public class DayStatisticListDoingsLab {
         return new ArrayList<>(setDates);
     }
 
-    public void updateDates() {
+    public void updateStatisticDates() {
         mDates = getDates();
     }
 

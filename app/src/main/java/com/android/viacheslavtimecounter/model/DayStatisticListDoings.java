@@ -28,7 +28,6 @@ public class DayStatisticListDoings {
         mContext = context;
         mDatabase = database;
         mDoings = getDoings();
-
     }
 
     public Calendar getDate() {

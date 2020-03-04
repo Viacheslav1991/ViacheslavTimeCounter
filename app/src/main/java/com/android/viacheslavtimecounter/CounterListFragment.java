@@ -1,12 +1,9 @@
 package com.android.viacheslavtimecounter;
 
-import android.content.BroadcastReceiver;
-import android.content.BroadcastReceiver.PendingResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,12 +14,14 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.viacheslavtimecounter.model.DayStatisticListDoings;
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,7 +36,6 @@ public class CounterListFragment extends Fragment {
     private CountAdapter mCountAdapter;
     private FloatingActionButton fab;
     private Callbacks mCallbacks;
-    private Intent currentIntentService;
     private int mHolderPosition;
 
     public interface Callbacks {
@@ -59,6 +57,16 @@ public class CounterListFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        ChangeDateReceiver receiver = new ChangeDateReceiver();
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
+        getActivity().registerReceiver(receiver, intentFilter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        checkDate();
     }
 
     @Override
@@ -71,7 +79,7 @@ public class CounterListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.show_statistic:
-//                DailyEmploymentListLab.getInstance(getActivity()).updateLists();
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity()).updateStatisticDates();
                 Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
                 startActivity(intent);
                 return true;
@@ -95,6 +103,15 @@ public class CounterListFragment extends Fragment {
                 mCallbacks.onNewDoingName();
             }
         });
+
+        if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
+            Doing doing = DayStatisticListDoingsLab
+                    .getDayStatisticListDoingsLab(getActivity())
+                    .getDayStatisticListDoings(new MyCalendar())
+                    .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
+            mCallbacks.onDoingNameSelected(doing);
+        }
+
         updateUI();
         return view;
     }
@@ -110,6 +127,37 @@ public class CounterListFragment extends Fragment {
         }
     }
 
+    private void checkDate() {
+        if (LastStartedDoingPreferences.getStartDate(getActivity()) == null) {
+            return;
+        }
+        if (!LastStartedDoingPreferences.getStartDate(getActivity())
+                .equals(TimeHelper.getDateString(new MyCalendar()))) {
+
+            //updating yesterday's doing
+            Calendar calendar = new MyCalendar();
+            long timeFinishDay = calendar.getTimeInMillis();
+            int timeFromStartToFinishSec = (int) (timeFinishDay - LastStartedDoingPreferences.getStartTimeMillis(getActivity())) / 1000;
+            Doing lastDoing = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(getActivity())))
+                    .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
+            lastDoing.setTotalTimeInt(lastDoing.getTotalTimeInt() + timeFromStartToFinishSec);
+            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(getActivity())))
+                    .updateDoing(lastDoing);
+
+            //create new today's doing
+            Doing todaysDoing = new Doing(lastDoing.getTitle(), lastDoing.getColor());
+            int timeFromBeginDayToNow = (int) (System.currentTimeMillis() - timeFinishDay) / 1000;
+            todaysDoing.setTotalTimeInt(timeFromBeginDayToNow);
+            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                    .getDayStatisticListDoings(new MyCalendar())
+                    .updateDoing(todaysDoing);
+            LastStartedDoingPreferences.setStartTime(getActivity(), timeFinishDay,
+                    todaysDoing.getId(), TimeHelper.getDateString(new MyCalendar()));
+
+        }
+    }//suppose I go in every day
 
     private class CountAdapter extends RecyclerView.Adapter<CountHolder> {
         private List<DoingName> mDoingNames;
@@ -177,15 +225,15 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            mHolderPosition = getAdapterPosition();
+            mHolderPosition = getAdapterPosition();//need it?
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
-//                DoingLab.getDoingLab(getActivity()).addDoing(mDoing);
-//                mDoing.setTotalTimeInt(100);
                 DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
                         .getDayStatisticListDoings(new MyCalendar())
                         .addDoing(mDoing);
             }
+            String dateStr = TimeHelper.getDateString(new MyCalendar());
+            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(), dateStr);
 
             /*if (currentIntentService != null) {
                 getActivity().stopService(currentIntentService);
@@ -230,6 +278,6 @@ public class CounterListFragment extends Fragment {
             return false;
         }
 
-
     }
+
 }
