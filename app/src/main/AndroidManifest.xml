@@ -21,11 +21,7 @@
         <activity android:name=".StatisticPagerActivity"
             android:parentActivityName=".CounterListActivity">
         </activity>
-        <receiver android:name=".ChangeDateReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
+
 
     </application>
 

@@ -59,9 +59,6 @@ public class CounterListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        ChangeDateReceiver receiver = new ChangeDateReceiver();
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
-        getActivity().registerReceiver(receiver, intentFilter);
     }
 
     @Override
@@ -98,15 +95,9 @@ public class CounterListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallbacks.onNewDoingName();
-            }
-        });
+        fab.setOnClickListener(v -> mCallbacks.onNewDoingName());
 
         if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
-
             Doing doing = DayStatisticListDoingsLab
                     .getDayStatisticListDoingsLab(getActivity())
                     .getDayStatisticListDoings(new MyCalendar())
@@ -156,7 +147,7 @@ public class CounterListFragment extends Fragment {
                     .getDayStatisticListDoings(new MyCalendar())
                     .updateDoing(todaysDoing);
             LastStartedDoingPreferences.setStartTime(getActivity(), timeFinishDay,
-                    todaysDoing.getId(), TimeHelper.getDateString(new MyCalendar()));
+                    todaysDoing.getId(), todaysDoing.getTotalTimeInt(), TimeHelper.getDateString(new MyCalendar()));
 
         }
     }//suppose I go in every day
@@ -235,7 +226,7 @@ public class CounterListFragment extends Fragment {
                         .addDoing(mDoing);
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());
-            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(), dateStr);
+            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(),mDoing.getTotalTimeInt(), dateStr);
 
             /*if (currentIntentService != null) {
                 getActivity().stopService(currentIntentService);

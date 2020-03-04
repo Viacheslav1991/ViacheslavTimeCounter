@@ -63,12 +63,13 @@ public class CounterFragment extends Fragment {
                 .getDayStatisticListDoings(new MyCalendar())
                 .getDoing(doingID);
         currentTime = 0;
+        totalTime = mDoing.getTotalTimeInt();
 
         if (mDoing.getId().equals(LastStartedDoingPreferences.getStartedDoingID(mActivity))) {//if it was after recreate
             currentTime = (int) (((System.currentTimeMillis()) - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+            totalTime = LastStartedDoingPreferences.getTotalTimeSec(mActivity);
         }
 
-        totalTime = mDoing.getTotalTimeInt();
 
 
         mDoingTextView = view.findViewById(R.id.counterTitleTextView);
