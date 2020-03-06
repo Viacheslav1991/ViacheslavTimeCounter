@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 // update statistic before opening of one!!!!!!!!!!!!!!!!!!!
 public class CounterListFragment extends Fragment {
+    private static final String ADAPTER_POSITION = "adapter_position";
+
     private RecyclerView mRecyclerView;
     private CountAdapter mCountAdapter;
     private FloatingActionButton fab;
@@ -110,6 +113,8 @@ public class CounterListFragment extends Fragment {
     }
 
     public void updateUI() {
+        mHolderPosition = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getInt(ADAPTER_POSITION, -1);
         List<DoingName> names = DoingNameLab.getDoingNameLab(getActivity()).getDoingNames();
         if (mCountAdapter == null) {
             mCountAdapter = new CountAdapter(names);
@@ -218,7 +223,14 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            mHolderPosition = getAdapterPosition();//need it?
+            if (mHolderPosition == getAdapterPosition()) {
+                return;
+            }
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .edit()
+                    .putInt(ADAPTER_POSITION, getAdapterPosition())
+                    .apply();
+
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
                 DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
@@ -227,14 +239,6 @@ public class CounterListFragment extends Fragment {
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());
             LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(),mDoing.getTotalTimeInt(), dateStr);
-
-            /*if (currentIntentService != null) {
-                getActivity().stopService(currentIntentService);
-            }
-
-            Intent intent = TimeService.newIntent(getActivity(), mDoing.getTotalTimeInt());
-            currentIntentService = intent;
-            getActivity().startService(intent);*/
 
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();

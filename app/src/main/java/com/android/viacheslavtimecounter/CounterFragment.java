@@ -32,6 +32,8 @@ public class CounterFragment extends Fragment {
     private Timer mTimer;
     private Activity mActivity;
 
+    private boolean isRecreated = false;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -66,6 +68,7 @@ public class CounterFragment extends Fragment {
         totalTime = mDoing.getTotalTimeInt();
 
         if (mDoing.getId().equals(LastStartedDoingPreferences.getStartedDoingID(mActivity))) {//if it was after recreate
+            isRecreated = true;
             currentTime = (int) (((System.currentTimeMillis()) - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
             totalTime = LastStartedDoingPreferences.getTotalTimeSec(mActivity);
         }
