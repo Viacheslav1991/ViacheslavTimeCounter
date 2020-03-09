@@ -31,8 +31,6 @@ public class CounterListActivity extends AppCompatActivity implements CounterLis
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
-
-
     }
 
     @Override

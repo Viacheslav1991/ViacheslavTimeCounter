@@ -2,7 +2,9 @@ package com.android.viacheslavtimecounter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +26,10 @@ import androidx.fragment.app.Fragment;
 
 public class CounterFragment extends Fragment {
     private static final String ARG_DOING_ID = "doing_id";
+    private static final String TAG = "CounterFragment";
     private Doing mDoing;
-    private int currentTime;
-    private int totalTime;
+    private int mCurrentTime;
+    private int mTotalTime;
     private TextView mDoingTextView;
     private TextView mTotalTimeTextView;
     private TextView mCurrentTimeTextView;
@@ -42,6 +45,39 @@ public class CounterFragment extends Fragment {
         super.onAttach(context);
         mActivity = (Activity) context;
     }
+
+    @Override
+    public void onStart() {
+/*
+        synchronized (this) {
+            if (checkMidnight()) {
+                Log.i(TAG, "Midnight onStart");
+                Calendar today = new MyCalendar();
+                int prevTotalTime = (int) ((today.getTimeInMillis() - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+                mDoing.setTotalTimeInt(prevTotalTime);
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                        .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                        .updateDoing(mDoing);
+
+                mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
+                        .getDayStatisticListDoings(today)
+                        .addDoing(mDoing);
+                int todayTotalTime = (int) ((System.currentTimeMillis() - today.getTimeInMillis()) / 1000);
+
+                LastStartedDoingPreferences.setStartTime(mActivity, today.getTimeInMillis(),
+                        mDoing.getId(), 0, TimeHelper.getDateString(today));
+                mCurrentTime = todayTotalTime;
+                mTotalTime = 0;
+            }
+        }
+*/
+
+        Log.i(TAG, "onStart");
+        checkDate();
+        super.onStart();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -59,23 +95,27 @@ public class CounterFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_counter, container, false);
         UUID doingID = (UUID) getArguments().getSerializable(ARG_DOING_ID);
 
-
         mDoing = DayStatisticListDoingsLab
                 .getDayStatisticListDoingsLab(getActivity())
-                .getDayStatisticListDoings(new MyCalendar())
+                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
                 .getDoing(doingID);
-        currentTime = 0;
-        totalTime = mDoing.getTotalTimeInt();
+
+
+        view.setBackgroundColor(mDoing.getColor());
+        view.getBackground().setAlpha(127);
+
+        mCurrentTime = 0;
+        mTotalTime = mDoing.getTotalTimeInt();
 
         if (mDoing.getId().equals(LastStartedDoingPreferences.getStartedDoingID(mActivity))) {//if it was after recreate
             isRecreated = true;
-            currentTime = (int) (((System.currentTimeMillis()) - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
-            totalTime = LastStartedDoingPreferences.getTotalTimeSec(mActivity);
+            mCurrentTime = (int) (((System.currentTimeMillis()) - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+            mTotalTime = LastStartedDoingPreferences.getTotalTimeSec(mActivity);
         }
-
 
 
         mDoingTextView = view.findViewById(R.id.counterTitleTextView);
@@ -83,8 +123,8 @@ public class CounterFragment extends Fragment {
         mCurrentTimeTextView = view.findViewById(R.id.counterCurrentTimeTextView);
 
         mDoingTextView.setText(mDoing.getTitle());
-        mTotalTimeTextView.setText(TimeHelper.getTime(totalTime + currentTime));
-        mCurrentTimeTextView.setText(TimeHelper.getTime(currentTime));
+        mTotalTimeTextView.setText(TimeHelper.getTime(mTotalTime + mCurrentTime));
+        mCurrentTimeTextView.setText(TimeHelper.getTime(mCurrentTime));
 
         mTimer = new Timer();
         mTimerTask = new MyTimerTask();
@@ -95,11 +135,11 @@ public class CounterFragment extends Fragment {
 
     @Override
     public void onStop() {
-        super.onStop();
-        mDoing.setTotalTimeInt(currentTime + totalTime);
+        mDoing.setTotalTimeInt(mCurrentTime + mTotalTime);
         DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                .getDayStatisticListDoings(new MyCalendar())
+                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
                 .updateDoing(mDoing);
+        super.onStop();
     }
 
     class MyTimerTask extends TimerTask {
@@ -111,25 +151,51 @@ public class CounterFragment extends Fragment {
 
                 @Override
                 public void run() {
-                    mTotalTimeTextView.setText( TimeHelper.getTime(totalTime + currentTime));
-                    mCurrentTimeTextView.setText(TimeHelper.getTime(currentTime++));
-                    if (checkMidnight()) {
-                        Toast.makeText(mActivity, "Midnight", Toast.LENGTH_SHORT).show();
+                    mTotalTimeTextView.setText(TimeHelper.getTime(mTotalTime + mCurrentTime));
+                    mCurrentTimeTextView.setText(TimeHelper.getTime(mCurrentTime++));
+                    checkDate();
+/*
+                    synchronized (this) {
+                        if (checkMidnight()) {
+                            */
+/*Toast.makeText(mActivity, "Midnight run", Toast.LENGTH_SHORT).show();
 
-                        mDoing.setTotalTimeInt(currentTime + totalTime);
-                        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
-                                .updateDoing(mDoing);
+                            mDoing.setTotalTimeInt(mCurrentTime + mTotalTime);
+                            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                                    .updateDoing(mDoing);
 
-                        mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
-                        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
-                                .getDayStatisticListDoings(new MyCalendar())
-                                .addDoing(mDoing);
-                        LastStartedDoingPreferences.setStartTime(mActivity, System.currentTimeMillis(),
-                                mDoing.getId(), 0, TimeHelper.getDateString(new MyCalendar()));
-                        currentTime = 0;
-                        totalTime = 0;
+                            mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
+                            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
+                                    .getDayStatisticListDoings(new MyCalendar())
+                                    .addDoing(mDoing);
+                            LastStartedDoingPreferences.setStartTime(mActivity, System.currentTimeMillis(),
+                                    mDoing.getId(), 0, TimeHelper.getDateString(new MyCalendar()));
+                            mCurrentTime = 0;
+                            mTotalTime = 0;*//*
+
+
+                            Calendar today = new MyCalendar();
+                            int prevTotalTime = (int) ((today.getTimeInMillis() - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+                            mDoing.setTotalTimeInt(prevTotalTime);
+                            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                                    .updateDoing(mDoing);
+
+                            mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
+                            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
+                                    .getDayStatisticListDoings(today)
+                                    .addDoing(mDoing);
+                            int todayTotalTime = (int) ((System.currentTimeMillis() - today.getTimeInMillis()) / 1000);
+
+                            LastStartedDoingPreferences.setStartTime(mActivity, today.getTimeInMillis(),
+                                    mDoing.getId(), 0, TimeHelper.getDateString(today));
+                            mCurrentTime = todayTotalTime;
+                            mTotalTime = 0;
+                        }
                     }
+*/
+
                 }
             });
         }
@@ -139,8 +205,33 @@ public class CounterFragment extends Fragment {
     private boolean checkMidnight() {
         Calendar startDate = TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity));
         Calendar currentDate = new GregorianCalendar();
-        currentDate.setTimeInMillis(System.currentTimeMillis());
+//        currentDate.setTimeInMillis(System.currentTimeMillis());
         return currentDate.get(Calendar.DAY_OF_MONTH) != startDate.get(Calendar.DAY_OF_MONTH);
+    }
+
+    private void checkDate() {
+        if (checkMidnight()) {
+            synchronized (this) {
+                Calendar today = new MyCalendar();
+                int prevTotalTime = (int) ((today.getTimeInMillis() - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
+                mDoing.setTotalTimeInt(prevTotalTime);
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                        .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                        .updateDoing(mDoing);
+
+                mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
+                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
+                        .getDayStatisticListDoings(today)
+                        .addDoing(mDoing);
+                int todayTotalTime = (int) ((System.currentTimeMillis() - today.getTimeInMillis()) / 1000);
+
+                LastStartedDoingPreferences.setStartTime(mActivity, today.getTimeInMillis(),
+                        mDoing.getId(), 0, TimeHelper.getDateString(today));
+                mCurrentTime = todayTotalTime;
+                mTotalTime = 0;
+            }
+
+        }
     }
 
 

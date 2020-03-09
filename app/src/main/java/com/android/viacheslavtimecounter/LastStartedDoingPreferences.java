@@ -11,10 +11,10 @@ public class LastStartedDoingPreferences {
     private static final String PREF_START_DATE = "startDate";
     private static final String PREF_DOING_ID = "last_doing_id";
 
-    public static void setStartTime(Context context, long time, UUID id, int totalTime, String dateStr) {
+    public static void setStartTime(Context context, long startTime, UUID id, int totalTime, String dateStr) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
-                .putLong(PREF_START_TIME, time)
+                .putLong(PREF_START_TIME, startTime)
                 .putInt(PREF_TOTAL_TIME, totalTime)
                 .putString(PREF_DOING_ID, id.toString())
                 .putString(PREF_START_DATE, dateStr)

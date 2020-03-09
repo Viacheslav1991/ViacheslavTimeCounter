@@ -135,7 +135,7 @@ public class CounterListFragment extends Fragment {
             //updating yesterday's doing
             Calendar calendar = new MyCalendar();
             long timeFinishDay = calendar.getTimeInMillis();
-            int timeFromStartToFinishSec = (int) (timeFinishDay - LastStartedDoingPreferences.getStartTimeMillis(getActivity())) / 1000;
+            int timeFromStartToFinishSec = (int) ((timeFinishDay - LastStartedDoingPreferences.getStartTimeMillis(getActivity())) / 1000);
             Doing lastDoing = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
                     .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(getActivity())))
                     .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
@@ -238,8 +238,7 @@ public class CounterListFragment extends Fragment {
                         .addDoing(mDoing);
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());
-            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(),mDoing.getTotalTimeInt(), dateStr);
-
+            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(), mDoing.getTotalTimeInt(), dateStr);
 
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();
