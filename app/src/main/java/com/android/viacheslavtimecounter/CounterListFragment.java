@@ -67,7 +67,7 @@ public class CounterListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        checkDate();
+//        checkDate();
     }
 
     @Override
@@ -239,6 +239,7 @@ public class CounterListFragment extends Fragment {
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());
             LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(),mDoing.getTotalTimeInt(), dateStr);
+
 
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();

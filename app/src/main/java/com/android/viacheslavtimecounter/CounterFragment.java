@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -109,10 +112,36 @@ public class CounterFragment extends Fragment {
                 @Override
                 public void run() {
                     mTotalTimeTextView.setText( TimeHelper.getTime(totalTime + currentTime));
-                    mCurrentTimeTextView.setText( TimeHelper.getTime(currentTime++));
+                    mCurrentTimeTextView.setText(TimeHelper.getTime(currentTime++));
+                    if (checkMidnight()) {
+                        Toast.makeText(mActivity, "Midnight", Toast.LENGTH_SHORT).show();
+
+                        mDoing.setTotalTimeInt(currentTime + totalTime);
+                        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                                .updateDoing(mDoing);
+
+                        mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
+                        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)
+                                .getDayStatisticListDoings(new MyCalendar())
+                                .addDoing(mDoing);
+                        LastStartedDoingPreferences.setStartTime(mActivity, System.currentTimeMillis(),
+                                mDoing.getId(), 0, TimeHelper.getDateString(new MyCalendar()));
+                        currentTime = 0;
+                        totalTime = 0;
+                    }
                 }
             });
         }
     }
+
+
+    private boolean checkMidnight() {
+        Calendar startDate = TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity));
+        Calendar currentDate = new GregorianCalendar();
+        currentDate.setTimeInMillis(System.currentTimeMillis());
+        return currentDate.get(Calendar.DAY_OF_MONTH) != startDate.get(Calendar.DAY_OF_MONTH);
+    }
+
 
 }
