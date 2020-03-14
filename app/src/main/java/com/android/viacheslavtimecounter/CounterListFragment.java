@@ -66,6 +66,7 @@ public class CounterListFragment extends Fragment {
 
     @Override
     public void onStart() {
+        updateUI();
         super.onStart();
 //        checkDate();
     }
