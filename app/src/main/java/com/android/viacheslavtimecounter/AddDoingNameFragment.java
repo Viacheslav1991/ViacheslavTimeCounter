@@ -94,8 +94,6 @@ public class AddDoingNameFragment extends DialogFragment {
 
 
         mChangeTimeButton = view.findViewById(R.id.time_button);
-        UUID doingsID = mDoing.getId();
-        UUID preferencesID = LastStartedDoingPreferences.getStartedDoingID(getActivity());
 
         if (mDoing != null &&
                 !mDoing.getId().equals(LastStartedDoingPreferences
