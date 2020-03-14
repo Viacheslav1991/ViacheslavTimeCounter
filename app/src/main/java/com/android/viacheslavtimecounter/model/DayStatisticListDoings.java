@@ -10,6 +10,8 @@ import com.android.viacheslavtimecounter.model.database.doings.DoingCursorWrappe
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -124,6 +126,7 @@ public class DayStatisticListDoings {
         } finally {
             cursor.close();
         }
+        Collections.sort(list, (o1, o2) -> Integer.compare(o2.getTotalTimeInt(), o1.getTotalTimeInt()));
         return list;
     }
 

@@ -68,7 +68,6 @@ public class CounterListFragment extends Fragment {
     public void onStart() {
         updateUI();
         super.onStart();
-//        checkDate();
     }
 
     @Override
@@ -247,30 +246,23 @@ public class CounterListFragment extends Fragment {
 
         @Override
         public boolean onLongClick(View v) {
-            Toast.makeText(getActivity(), "LongClicked", Toast.LENGTH_LONG).show();
             PopupMenu popupMenu = new PopupMenu(getActivity(), v);
             popupMenu.inflate(R.menu.doing_name_long_press_menu);
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.menu_item_delete:
-                            Toast.makeText(getActivity(), "Deleted", Toast.LENGTH_LONG).show();
-                            DoingNameLab.getDoingNameLab(getActivity())
-                                    .deleteDoingName(mDoingName);
-                            updateUI();
-                            break;
-                        case R.id.menu_item_change:
-                            Toast.makeText(getActivity(), "Changed", Toast.LENGTH_LONG).show();
-//                            mCallbacks.onChangeItemEmployments(mItem.getTitle());
-                            mCallbacks.onChangeDoingName(mDoingName.getTitle());
-                            updateUI();
-                            break;
-                        default:
-                            break;
-                    }
-                    return false;
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.menu_item_delete:
+                        DoingNameLab.getDoingNameLab(getActivity())
+                                .deleteDoingName(mDoingName);
+                        updateUI();
+                        break;
+                    case R.id.menu_item_change:
+                        mCallbacks.onChangeDoingName(mDoingName.getTitle());
+                        updateUI();
+                        break;
+                    default:
+                        break;
                 }
+                return false;
             });
             popupMenu.show();
             return false;

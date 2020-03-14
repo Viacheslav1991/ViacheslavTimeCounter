@@ -22,6 +22,7 @@ import com.android.viacheslavtimecounter.model.DoingNameLab;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -93,7 +94,12 @@ public class AddDoingNameFragment extends DialogFragment {
 
 
         mChangeTimeButton = view.findViewById(R.id.time_button);
-        if (mDoing != null) {           //need it?
+        UUID doingsID = mDoing.getId();
+        UUID preferencesID = LastStartedDoingPreferences.getStartedDoingID(getActivity());
+
+        if (mDoing != null &&
+                !mDoing.getId().equals(LastStartedDoingPreferences
+                        .getStartedDoingID(getActivity()))) {//We can't change running activity
             final int totalTime = mDoing.getTotalTimeInt();
             mChangeTimeButton.setText(TimeHelper.getTime(totalTime));
             mChangeTimeButton.setOnClickListener(v -> {
@@ -125,7 +131,6 @@ public class AddDoingNameFragment extends DialogFragment {
 
             }
         });
-
 
 
         mColorPicker = new ColorPicker(getActivity());
