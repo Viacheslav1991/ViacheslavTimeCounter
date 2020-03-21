@@ -217,10 +217,8 @@ public class CounterFragment extends Fragment {
             synchronized (this) {
                 Calendar today = new MyCalendar();
                 int prevTotalTime = (int) ((today.getTimeInMillis() - LastStartedDoingPreferences.getStartTimeMillis(mActivity)) / 1000);
-                mDoing.setTotalTimeInt(prevTotalTime);
-                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                        .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
-                        .updateDoing(mDoing);
+                mCurrentTime = prevTotalTime;
+                updateDoing();
 
                 mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
                 DayStatisticListDoingsLab.getDayStatisticListDoingsLab(mActivity)

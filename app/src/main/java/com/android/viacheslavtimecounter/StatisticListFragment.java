@@ -99,7 +99,6 @@ public class StatisticListFragment extends Fragment {
         public StatisticListFragment.LineHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_count,
                     viewGroup, false);
-
             return new StatisticListFragment.LineHolder(v);
         }
 
