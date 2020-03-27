@@ -22,6 +22,7 @@ import com.android.viacheslavtimecounter.model.DoingNameLab;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -131,7 +132,7 @@ public class AddDoingNameFragment extends DialogFragment {
         });
 
 
-        mColorPicker = new ColorPicker(getActivity());
+        mColorPicker = new ColorPicker(Objects.requireNonNull(getActivity()));
         mColorPicker
                 .setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
                     @SuppressLint("LongLogTag")

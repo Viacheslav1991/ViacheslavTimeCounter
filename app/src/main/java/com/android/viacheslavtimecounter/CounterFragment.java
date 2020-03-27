@@ -147,7 +147,6 @@ public class CounterFragment extends Fragment {
             mActivity.runOnUiThread(() -> {
                 mTotalTimeTextView.setText(TimeHelper.getTime(mTotalTime + mCurrentTime));
                 mCurrentTimeTextView.setText(TimeHelper.getTime(mCurrentTime++));
-
                 checkDate();
                 updateDoing();
 

@@ -19,15 +19,15 @@ import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSch
 public class DayStatisticListDoingsLab {
     private static DayStatisticListDoingsLab sDayStatisticListDoingsLab;
     private Context mContext;
-    private SQLiteDatabase mDatabase;
-    private List<DayStatisticListDoings> mDayStatisticListDoingsList;
+    static private SQLiteDatabase sDatabase;
+//    private List<DayStatisticListDoings> mDayStatisticListDoingsList;
     private List<String> mDates;//use to know how many dates we have
 
     private DayStatisticListDoingsLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new DoingBaseHelper(mContext)
+        sDatabase = new DoingBaseHelper(mContext)
                 .getWritableDatabase();
-        mDayStatisticListDoingsList = new ArrayList<>(); //delete
+//        mDayStatisticListDoingsList = new ArrayList<>(); //delete
         updateStatisticDates();
         /*for (int i = 0; i < 8; i++) { //add some yesterday's doings
             Random rnd = new Random();
@@ -66,12 +66,14 @@ public class DayStatisticListDoingsLab {
         return sDayStatisticListDoingsLab;
     }
 
-    public void addDayStatisticListDoings(DayStatisticListDoings dayStatisticListDoings) {
+
+
+   /* public void addDayStatisticListDoings(DayStatisticListDoings dayStatisticListDoings) {
         mDayStatisticListDoingsList.add(dayStatisticListDoings);
-    }
+    }*/
 
     public DayStatisticListDoings getDayStatisticListDoings(Calendar date) {
-        for (DayStatisticListDoings dayStatisticListDoings : mDayStatisticListDoingsList
+        /*for (DayStatisticListDoings dayStatisticListDoings : mDayStatisticListDoingsList
         ) {
             if (TimeHelper.compareDate(dayStatisticListDoings.getDate(), date)) {
                 return dayStatisticListDoings;
@@ -79,7 +81,8 @@ public class DayStatisticListDoingsLab {
         }
         DayStatisticListDoings dayStatisticListDoings = new DayStatisticListDoings(mContext, mDatabase, date);//it's only for test
         addDayStatisticListDoings(dayStatisticListDoings);
-        return dayStatisticListDoings;
+        return dayStatisticListDoings;*/
+        return new DayStatisticListDoings(mContext, sDatabase, date);
     }
 
     public DayStatisticListDoings getDayStatisticListDoings(Integer i) {
@@ -91,7 +94,6 @@ public class DayStatisticListDoingsLab {
     public int getSize() {
         return mDates.size();
     }
-
 
     private ArrayList<String> getDates() {
         Set<String> setDates = new LinkedHashSet<>();
@@ -113,8 +115,8 @@ public class DayStatisticListDoingsLab {
         mDates = getDates();
     }
 
-    private DoingCursorWrapper queryDoings(String whereClause, String[] whereArgs) {
-        Cursor cursor = mDatabase.query(
+    static DoingCursorWrapper queryDoings(String whereClause, String[] whereArgs) {
+        Cursor cursor = sDatabase.query(
                 DoingsTable.NAME,
                 null, // columns - null selects all columns
                 whereClause,

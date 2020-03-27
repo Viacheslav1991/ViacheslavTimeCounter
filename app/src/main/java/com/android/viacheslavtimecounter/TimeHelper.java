@@ -9,8 +9,6 @@ import java.util.Date;
 public class TimeHelper {
     private static final SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
 
-
-
     public static String getTime(int time) {
         String result = "";
         int hours = time / 3600;

@@ -238,7 +238,8 @@ public class CounterListFragment extends Fragment {
                         .addDoing(mDoing);
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());
-            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis(), mDoing.getId(), mDoing.getTotalTimeInt(), dateStr);
+            LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis()
+                    , mDoing.getId(), mDoing.getTotalTimeInt(), dateStr);
 
             mCallbacks.onDoingNameSelected(mDoing);
             updateUI();

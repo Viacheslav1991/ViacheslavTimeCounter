@@ -50,7 +50,6 @@ public class StatisticListFragment extends Fragment {
     }
 
     public static StatisticListFragment newInstance(Calendar date) {
-
         Bundle args = new Bundle();
         args.putSerializable(ARG_DAY_LIST_DATE, date);
 
