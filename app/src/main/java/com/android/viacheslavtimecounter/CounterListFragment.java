@@ -2,9 +2,9 @@ package com.android.viacheslavtimecounter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +15,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.viacheslavtimecounter.model.DayStatisticListDoings;
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingName;
@@ -24,7 +23,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -79,9 +77,14 @@ public class CounterListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.show_statistic:
+            case R.id.show_statistic_day:
                 DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity()).updateStatisticDates();
-                Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
+//                Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
+                Intent intent = StatisticPagerActivity.newIntent(getActivity(),StatisticPagerActivity.TYPE_STATISTIC_DAY);
+                startActivity(intent);
+                return true;
+            case R.id.show_statistic_week:
+                intent = StatisticPagerActivity.newIntent(getActivity(),StatisticPagerActivity.TYPE_STATISTIC_WEEK);
                 startActivity(intent);
                 return true;
             default:

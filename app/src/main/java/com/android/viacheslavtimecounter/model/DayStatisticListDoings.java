@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
-public class DayStatisticListDoings {
+public class DayStatisticListDoings implements StatisticList{
     private Calendar mDate;
     private List<Doing> mDoings;
     private Context mContext;

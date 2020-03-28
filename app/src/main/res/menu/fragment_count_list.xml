@@ -2,8 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/show_statistic"
-        android:title="@string/show_statistic"
-        app:showAsAction="ifRoom|withText"/>
+        android:id="@+id/show_statistic_day"
+        android:title="@string/show_statistic_day"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/show_statistic_week"
+        android:title="@string/show_statistic_week"
+        app:showAsAction="never"/>
 
 </menu>

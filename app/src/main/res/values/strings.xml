@@ -12,7 +12,8 @@
 <string name="select_color">Select color</string>
 <string name="delete">Delete</string>
 <string name="change">Change</string>
-<string name="show_statistic">Show statistic</string>
+<string name="show_statistic_day">Statistic day</string>
+<string name="show_statistic_week">Statistic week</string>
 <string name="date_picker_title">Date of list:</string>
     <string name="time_picker_title">Time of doing</string>
 

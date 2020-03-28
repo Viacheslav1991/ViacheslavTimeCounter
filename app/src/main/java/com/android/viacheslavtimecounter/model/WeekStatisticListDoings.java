@@ -4,6 +4,7 @@ import com.android.viacheslavtimecounter.TimeHelper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingCursorWrapper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -14,7 +15,7 @@ import java.util.Objects;
 
 import static com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab.queryDoings;
 
-public class WeekStatisticListDoings {
+public class WeekStatisticListDoings implements StatisticList {
     private Calendar mCalendar;
 
     public WeekStatisticListDoings(Calendar calendar) {
@@ -48,5 +49,10 @@ public class WeekStatisticListDoings {
         List<Doing> doings = new ArrayList<>(doingHashMap.values());
         Collections.sort(doings, (o1, o2) -> Integer.compare(o2.getTotalTimeInt(), o1.getTotalTimeInt()));
         return doings;
+    }
+
+    @Override
+    public Calendar getDate() {
+        return mCalendar;
     }
 }

@@ -1,10 +1,19 @@
 package com.android.viacheslavtimecounter;
 
 
+import android.os.Build;
+
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Month;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import androidx.annotation.RequiresApi;
+
+import static java.util.Calendar.DAY_OF_WEEK;
 
 public class TimeHelper {
     private static final SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
@@ -57,5 +66,14 @@ public class TimeHelper {
         /*return String.valueOf(calendar.get(Calendar.YEAR)) + " " +
                 calendar.get(Calendar.MONTH) + " "
                 + calendar.get(Calendar.DAY_OF_MONTH);*/
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static String getWeekString(Calendar date) {
+        date.set(DAY_OF_WEEK, Calendar.SUNDAY);
+        int beginningOfWeek = date.get(Calendar.DAY_OF_MONTH);
+        date.set(DAY_OF_WEEK, Calendar.SATURDAY);
+        int weekend = date.get(Calendar.DAY_OF_MONTH);
+        return String.format("%s from %d to %d", date.getDisplayName(Calendar.MONTH,Calendar.LONG,new Locale("en")), beginningOfWeek, weekend);
     }
 }

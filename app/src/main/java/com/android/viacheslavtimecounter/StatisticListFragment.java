@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +13,12 @@ import android.widget.TextView;
 import com.android.viacheslavtimecounter.model.DayStatisticListDoings;
 import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
+import com.android.viacheslavtimecounter.model.StatisticList;
+import com.android.viacheslavtimecounter.model.WeekStatisticListDoings;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -29,7 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class StatisticListFragment extends Fragment {
     private static final String ARG_DAY_LIST_DATE = "day_list_date";
-
+    private static final String ARG_STATISTIC_LIST = "statistic_list";
     private static final String DIALOG_DATE = "DialogDate";
     private static final int REQUEST_DATE = 0;
 
@@ -37,10 +38,11 @@ public class StatisticListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Button mDateButton;
     private Callbacks mCallbacks;
-    private DayStatisticListDoings mDayStatisticListDoings;
+    //    private DayStatisticListDoings mDayStatisticListDoings;
+    private StatisticList mStatisticList;
 
     public interface Callbacks {
-         void onDateSelected(Integer i);
+        void onDateSelected(Integer i);
     }
 
     @Override
@@ -49,9 +51,10 @@ public class StatisticListFragment extends Fragment {
         mCallbacks = (Callbacks) context;
     }
 
-    public static StatisticListFragment newInstance(Calendar date) {
+    public static StatisticListFragment newInstance(Calendar date, StatisticList statisticList) {
         Bundle args = new Bundle();
         args.putSerializable(ARG_DAY_LIST_DATE, date);
+        args.putSerializable(ARG_STATISTIC_LIST, statisticList);
 
         StatisticListFragment fragment = new StatisticListFragment();
         fragment.setArguments(args);
@@ -69,7 +72,13 @@ public class StatisticListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         Calendar date = (Calendar) getArguments().getSerializable(ARG_DAY_LIST_DATE);
-        mDateButton.setText(TimeHelper.getDateString(date));
+
+        if (mStatisticList instanceof DayStatisticListDoings) {
+            mDateButton.setText(TimeHelper.getDateString(date));
+        } else if (mStatisticList instanceof WeekStatisticListDoings) {
+        }
+        mDateButton.setText(TimeHelper.getWeekString(date));
+
         mDateButton.setOnClickListener(v -> {
             FragmentManager manager = getFragmentManager();
             DatePickerFragment dialog = new DatePickerFragment();
@@ -77,9 +86,12 @@ public class StatisticListFragment extends Fragment {
             dialog.show(manager, DIALOG_DATE);
         });
 
-        mDayStatisticListDoings = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+/*
+        mStatisticList = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
                 .getDayStatisticListDoings(date);
-        mRecyclerView.setAdapter(new LineAdapter(mDayStatisticListDoings.getDoings()));     //change!
+*/
+        mStatisticList = (StatisticList) getArguments().getSerializable(ARG_STATISTIC_LIST);
+        mRecyclerView.setAdapter(new LineAdapter(mStatisticList.getDoings()));     //change!
 
         return view;
     }

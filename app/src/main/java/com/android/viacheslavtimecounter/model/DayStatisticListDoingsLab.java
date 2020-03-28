@@ -3,6 +3,7 @@ package com.android.viacheslavtimecounter.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
 import com.android.viacheslavtimecounter.TimeHelper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingBaseHelper;
@@ -10,9 +11,13 @@ import com.android.viacheslavtimecounter.model.database.doings.DoingCursorWrappe
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.RequiresApi;
 
 import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
@@ -126,6 +131,29 @@ public class DayStatisticListDoingsLab {
                 null  // orderBy
         );
         return new DoingCursorWrapper(cursor);
+    }
+
+    public List<StatisticList> getDays() {
+        ArrayList<StatisticList> days = new ArrayList<>();
+        for (int i = 0; i < getDates().size(); i++) {
+            days.add(getDayStatisticListDoings(i));
+        }
+        return days;
+    }
+    public List<StatisticList> getWeeks() {
+        ArrayList<StatisticList> weeks = new ArrayList<>();
+        Set<Integer> numbersOfWeeks = new HashSet<>();
+        for (int i = 0; i < getDates().size(); i++) {
+            Calendar calendar = TimeHelper.getDateCalendar(getDates().get(i));
+            numbersOfWeeks.add(calendar.get(Calendar.WEEK_OF_YEAR));
+        }
+        ArrayList<Integer> numbersOfWeeksList = new ArrayList<>(numbersOfWeeks);
+        for (int i = 0; i < numbersOfWeeks.size(); i++) {
+            Calendar calendar = new GregorianCalendar();
+            calendar.set(Calendar.WEEK_OF_YEAR, numbersOfWeeksList.get(i));
+            weeks.add(new WeekStatisticListDoings(calendar));
+        }
+        return weeks;
     }
 
 }
