@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,9 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
+import com.android.viacheslavtimecounter.model.StatisticDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
@@ -78,7 +76,7 @@ public class CounterListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.show_statistic_day:
-                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity()).updateStatisticDates();
+                StatisticDoingsLab.getStatisticDoingsLab(getActivity()).updateStatisticDates();
 //                Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
                 Intent intent = StatisticPagerActivity.newIntent(getActivity(),StatisticPagerActivity.TYPE_STATISTIC_DAY);
                 startActivity(intent);
@@ -104,8 +102,8 @@ public class CounterListFragment extends Fragment {
         fab.setOnClickListener(v -> mCallbacks.onNewDoingName());
 
         if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
-            Doing doing = DayStatisticListDoingsLab
-                    .getDayStatisticListDoingsLab(getActivity())
+            Doing doing = StatisticDoingsLab
+                    .getStatisticDoingsLab(getActivity())
                     .getDayStatisticListDoings(new MyCalendar())
                     .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
             mCallbacks.onDoingNameSelected(doing);
@@ -127,38 +125,6 @@ public class CounterListFragment extends Fragment {
             mCountAdapter.notifyDataSetChanged();
         }
     }
-
-    private void checkDate() {
-        if (LastStartedDoingPreferences.getStartDate(getActivity()) == null) {
-            return;
-        }
-        if (!LastStartedDoingPreferences.getStartDate(getActivity())
-                .equals(TimeHelper.getDateString(new MyCalendar()))) {
-
-            //updating yesterday's doing
-            Calendar calendar = new MyCalendar();
-            long timeFinishDay = calendar.getTimeInMillis();
-            int timeFromStartToFinishSec = (int) ((timeFinishDay - LastStartedDoingPreferences.getStartTimeMillis(getActivity())) / 1000);
-            Doing lastDoing = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(getActivity())))
-                    .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
-            lastDoing.setTotalTimeInt(lastDoing.getTotalTimeInt() + timeFromStartToFinishSec);
-            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                    .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(getActivity())))
-                    .updateDoing(lastDoing);
-
-            //create new today's doing
-            Doing todaysDoing = new Doing(lastDoing.getTitle(), lastDoing.getColor());
-            int timeFromBeginDayToNow = (int) (System.currentTimeMillis() - timeFinishDay) / 1000;
-            todaysDoing.setTotalTimeInt(timeFromBeginDayToNow);
-            DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new MyCalendar())
-                    .updateDoing(todaysDoing);
-            LastStartedDoingPreferences.setStartTime(getActivity(), timeFinishDay,
-                    todaysDoing.getId(), todaysDoing.getTotalTimeInt(), TimeHelper.getDateString(new MyCalendar()));
-
-        }
-    }//suppose I go in every day
 
     private class CountAdapter extends RecyclerView.Adapter<CountHolder> {
         private List<DoingName> mDoingNames;
@@ -213,8 +179,8 @@ public class CounterListFragment extends Fragment {
             mDoingName = doingName;
             mView.setBackgroundColor(doingName.getColor());
             mTitleTextView.setText(mDoingName.getTitle());
-            mDoing = DayStatisticListDoingsLab
-                    .getDayStatisticListDoingsLab(getActivity())
+            mDoing = StatisticDoingsLab
+                    .getStatisticDoingsLab(getActivity())
                     .getDayStatisticListDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle()); //get today's doing(may be move to adapter?)
             if (mDoing != null) {
@@ -236,7 +202,7 @@ public class CounterListFragment extends Fragment {
 
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
-                DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                StatisticDoingsLab.getStatisticDoingsLab(getActivity())
                         .getDayStatisticListDoings(new MyCalendar())
                         .addDoing(mDoing);
             }

@@ -17,14 +17,14 @@ import java.util.UUID;
 
 import static com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema.*;
 
-public class DayStatisticListDoings implements StatisticList{
+public class DayDoings implements StatisticList{
     private Calendar mDate;
     private List<Doing> mDoings;
     private Context mContext;
     private SQLiteDatabase mDatabase;
 
 
-    public DayStatisticListDoings(Context context, SQLiteDatabase database, Calendar date) {
+    public DayDoings(Context context, SQLiteDatabase database, Calendar date) {
         mDate = date;
 //        mDoings = new ArrayList<>();//download here doings from DB?
         mContext = context;

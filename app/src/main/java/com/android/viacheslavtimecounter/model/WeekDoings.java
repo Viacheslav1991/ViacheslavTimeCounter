@@ -4,7 +4,6 @@ import com.android.viacheslavtimecounter.TimeHelper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingCursorWrapper;
 import com.android.viacheslavtimecounter.model.database.doings.DoingDbSchema;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab.queryDoings;
+import static com.android.viacheslavtimecounter.model.StatisticDoingsLab.queryDoings;
 
-public class WeekStatisticListDoings implements StatisticList {
+public class WeekDoings implements StatisticList {
     private Calendar mCalendar;
 
-    public WeekStatisticListDoings(Calendar calendar) {
+    public WeekDoings(Calendar calendar) {
         mCalendar = calendar;
     }
 

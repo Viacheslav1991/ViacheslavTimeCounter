@@ -4,19 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.viacheslavtimecounter.model.DayStatisticListDoings;
-import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
+import com.android.viacheslavtimecounter.model.DayDoings;
+import com.android.viacheslavtimecounter.model.StatisticDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.StatisticList;
-import com.android.viacheslavtimecounter.model.WeekStatisticListDoings;
+import com.android.viacheslavtimecounter.model.WeekDoings;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +28,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static android.content.ContentValues.TAG;
+import static java.util.Calendar.DAY_OF_WEEK;
+import static java.util.Calendar.WEEK_OF_YEAR;
+
 public class StatisticListFragment extends Fragment {
     private static final String ARG_DAY_LIST_DATE = "day_list_date";
     private static final String ARG_STATISTIC_LIST = "statistic_list";
@@ -38,7 +42,6 @@ public class StatisticListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private Button mDateButton;
     private Callbacks mCallbacks;
-    //    private DayStatisticListDoings mDayStatisticListDoings;
     private StatisticList mStatisticList;
 
     public interface Callbacks {
@@ -72,12 +75,14 @@ public class StatisticListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         Calendar date = (Calendar) getArguments().getSerializable(ARG_DAY_LIST_DATE);
+        Log.i(TAG, "onCreateView: " + date.get(Calendar.DAY_OF_MONTH));
 
-        if (mStatisticList instanceof DayStatisticListDoings) {
+        mStatisticList = (StatisticList) getArguments().getSerializable(ARG_STATISTIC_LIST);
+        if (mStatisticList instanceof DayDoings) {
             mDateButton.setText(TimeHelper.getDateString(date));
-        } else if (mStatisticList instanceof WeekStatisticListDoings) {
+        } else if (mStatisticList instanceof WeekDoings) {
+            mDateButton.setText(TimeHelper.getWeekDateString(date));
         }
-        mDateButton.setText(TimeHelper.getWeekString(date));
 
         mDateButton.setOnClickListener(v -> {
             FragmentManager manager = getFragmentManager();
@@ -86,11 +91,6 @@ public class StatisticListFragment extends Fragment {
             dialog.show(manager, DIALOG_DATE);
         });
 
-/*
-        mStatisticList = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
-                .getDayStatisticListDoings(date);
-*/
-        mStatisticList = (StatisticList) getArguments().getSerializable(ARG_STATISTIC_LIST);
         mRecyclerView.setAdapter(new LineAdapter(mStatisticList.getDoings()));     //change!
 
         return view;
@@ -158,18 +158,39 @@ public class StatisticListFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
+            if (mStatisticList instanceof DayDoings) {
+                for (int i = 0; i < StatisticDoingsLab.getStatisticDoingsLab(getActivity()).getDays().size(); i++) {
+                    DayDoings list = StatisticDoingsLab
+                            .getStatisticDoingsLab(getActivity())
+                            .getDayStatisticListDoings(i);
+                    if (TimeHelper.compareDate(list.getDate(), calendar)) {
+                        mCallbacks.onDateSelected(i);
+                    }
+                }
+            } else if (mStatisticList instanceof WeekDoings) {
+                for (int i = 0; i < StatisticDoingsLab.getStatisticDoingsLab(getActivity()).getWeeks().size(); i++) {
+                    WeekDoings weekDoings = (WeekDoings) StatisticDoingsLab
+                            .getStatisticDoingsLab(getActivity())
+                            .getWeeks().get(i);
+                    if (weekDoings.getDate().get(WEEK_OF_YEAR)==calendar.get(WEEK_OF_YEAR)&&
+                            calendar.get(DAY_OF_WEEK) >= calendar.getFirstDayOfWeek() &&
+                            calendar.get(DAY_OF_WEEK) <= calendar.getFirstDayOfWeek() + 6) {
+                        mCallbacks.onDateSelected(i);
+                    }
+                }
+//                mCallbacks.onDateSelected(0);
+            }
 
-
-            for (int i = 0; i < DayStatisticListDoingsLab
-                    .getDayStatisticListDoingsLab(getActivity())
+           /* for (int i = 0; i < StatisticDoingsLab
+                    .getStatisticDoingsLab(getActivity())
                     .getSize(); i++) {
-                DayStatisticListDoings list = DayStatisticListDoingsLab
-                        .getDayStatisticListDoingsLab(getActivity())
+                DayDoings list = StatisticDoingsLab
+                        .getStatisticDoingsLab(getActivity())
                         .getDayStatisticListDoings(i);
                 if (TimeHelper.compareDate(list.getDate(), calendar)) {
                     mCallbacks.onDateSelected(i);
                 }
-            }
+            }*/
 
         }
     }

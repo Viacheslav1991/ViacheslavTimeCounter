@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 
-import com.android.viacheslavtimecounter.model.DayStatisticListDoings;
-import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
+import com.android.viacheslavtimecounter.model.StatisticDoingsLab;
 import com.android.viacheslavtimecounter.model.StatisticList;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +26,7 @@ public class StatisticPagerActivity extends AppCompatActivity implements Statist
     static final int TYPE_STATISTIC_WEEK = 1;
 
     private ViewPager mViewPager;
-    private List<StatisticList> statisticList;
+    private List<StatisticList> mStatisticLists;
 
     public static Intent newIntent(Context packageContext, int statisticType) {
         Intent intent = new Intent(packageContext, StatisticPagerActivity.class);
@@ -43,32 +41,21 @@ public class StatisticPagerActivity extends AppCompatActivity implements Statist
         mViewPager = findViewById(R.id.statistic_view_pager);
         int typeOfList = (int) getIntent().getSerializableExtra(EXTRA_STATISTIC_TYPE);
         if (typeOfList == TYPE_STATISTIC_DAY) {
-            statisticList = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getApplicationContext()).getDays();
+            mStatisticLists = StatisticDoingsLab.getStatisticDoingsLab(getApplicationContext()).getDays();
         } else if (typeOfList == TYPE_STATISTIC_WEEK) {
-            statisticList = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getApplicationContext()).getWeeks();
+            mStatisticLists = StatisticDoingsLab.getStatisticDoingsLab(getApplicationContext()).getWeeks();
         }
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
             @Override
             public Fragment getItem(int i) {
-/*
-                DayStatisticListDoings list = DayStatisticListDoingsLab
-                        .getDayStatisticListDoingsLab(getApplicationContext())
-                        .getDayStatisticListDoings(i);
-                return StatisticListFragment.newInstance(list.getDate());
-*/
-                return StatisticListFragment.newInstance(statisticList.get(i).getDate(),statisticList.get(i));
+                return StatisticListFragment.newInstance(mStatisticLists.get(i).getDate(), mStatisticLists.get(i));
             }
 
             @Override
             public int getCount() {
-/*
-                return DayStatisticListDoingsLab
-                        .getDayStatisticListDoingsLab(getApplicationContext())
-                        .getSize();
-*/
-                return statisticList.size();
+                return mStatisticLists.size();
             }
         });
         mViewPager.setCurrentItem(Objects.requireNonNull(mViewPager.getAdapter()).getCount() - 1);

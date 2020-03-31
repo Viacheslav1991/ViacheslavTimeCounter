@@ -15,15 +15,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.android.viacheslavtimecounter.model.DayStatisticListDoingsLab;
+import com.android.viacheslavtimecounter.model.StatisticDoingsLab;
 import com.android.viacheslavtimecounter.model.Doing;
 import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,7 +67,7 @@ public class AddDoingNameFragment extends DialogFragment {
         String title;
         if (getArguments() != null && (title = (String) getArguments().getSerializable(ARG_DOING_NAME_TITLE)) != null) {
             mDoingName = DoingNameLab.getDoingNameLab(getActivity()).getDoingName(title);
-            mDoing = DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+            mDoing = StatisticDoingsLab.getStatisticDoingsLab(getActivity())
                     .getDayStatisticListDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle());
             mDoingNameExisted = true;
@@ -175,7 +172,7 @@ public class AddDoingNameFragment extends DialogFragment {
                     if (mDoing != null) { //update today's doing(name and color)
                         mDoing.setTitle(mDoingName.getTitle());
                         mDoing.setColor(mDoingName.getColor());
-                        DayStatisticListDoingsLab.getDayStatisticListDoingsLab(getActivity())
+                        StatisticDoingsLab.getStatisticDoingsLab(getActivity())
                                 .getDayStatisticListDoings(new MyCalendar())
                                 .updateDoing(mDoing);
                     }
@@ -206,6 +203,7 @@ public class AddDoingNameFragment extends DialogFragment {
         }
         if (requestCode == REQUEST_TIME) {
             int timeSec = (int) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME_INT);
+
             mDoing.setTotalTimeInt(timeSec);
             mChangeTimeButton.setText(TimeHelper.getTime(timeSec));
         }

@@ -19,7 +19,7 @@ import androidx.fragment.app.DialogFragment;
 public class DatePickerFragment extends DialogFragment {
     private static final String ARG_DATE =
             "date";
-    protected static final String EXTRA_DATE =
+    static final String EXTRA_DATE =
             "com.android.viacheslavtimecounter.date";
 
     private DatePicker mDatePicker;
