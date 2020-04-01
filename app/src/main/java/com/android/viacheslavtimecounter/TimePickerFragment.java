@@ -29,7 +29,6 @@ public class TimePickerFragment extends DialogFragment {
     private TimePicker mTimePicker;
 
     public static TimePickerFragment newInstance(Integer timeInt) {
-
         Bundle args = new Bundle();
         args.putSerializable(ARG_TIME_INT, timeInt);
 

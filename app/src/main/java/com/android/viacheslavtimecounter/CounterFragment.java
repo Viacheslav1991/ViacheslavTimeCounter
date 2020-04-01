@@ -1,7 +1,10 @@
 package com.android.viacheslavtimecounter;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import com.android.viacheslavtimecounter.model.Doing;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -36,6 +40,14 @@ public class CounterFragment extends Fragment {
     private Timer mTimer;
     private Activity mActivity;
 
+    private BroadcastReceiver mOnChangeTimeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: " + intent.getExtras().get(AddDoingNameFragment.EXTRA_CHANGED_TIME));
+            mTotalTime = (int) intent.getExtras().get(AddDoingNameFragment.EXTRA_CHANGED_TIME);
+        }
+    };
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -45,6 +57,10 @@ public class CounterFragment extends Fragment {
     @Override
     public void onStart() {
         Log.i(TAG, "onStart");
+
+        IntentFilter filter = new IntentFilter(AddDoingNameFragment.ACTION_TOTAL_TIME_CHANGED);
+        Objects.requireNonNull(getActivity()).registerReceiver(mOnChangeTimeReceiver, filter);
+
         checkDate();
         super.onStart();
     }
@@ -68,7 +84,7 @@ public class CounterFragment extends Fragment {
 
         mDoing = StatisticDoingsLab
                 .getStatisticDoingsLab(getActivity())
-                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                .getDayDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
                 .getDoing(doingID);
 
 
@@ -118,8 +134,10 @@ public class CounterFragment extends Fragment {
             mActivity.runOnUiThread(() -> {
                 mTotalTimeTextView.setText(TimeHelper.getTime(mTotalTime + mCurrentTime));
                 mCurrentTimeTextView.setText(TimeHelper.getTime(mCurrentTime++));
+
                 checkDate();
                 updateDoing();
+
             });
         }
     }
@@ -127,7 +145,7 @@ public class CounterFragment extends Fragment {
     private void updateDoing() {
         mDoing.setTotalTimeInt(mCurrentTime + mTotalTime);
         StatisticDoingsLab.getStatisticDoingsLab(getActivity())
-                .getDayStatisticListDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
+                .getDayDoings(TimeHelper.getDateCalendar(LastStartedDoingPreferences.getStartDate(mActivity)))
                 .updateDoing(mDoing);
     }
 
@@ -147,7 +165,7 @@ public class CounterFragment extends Fragment {
 
                 mDoing = new Doing(mDoing.getTitle(), mDoing.getColor());
                 StatisticDoingsLab.getStatisticDoingsLab(mActivity)
-                        .getDayStatisticListDoings(today)
+                        .getDayDoings(today)
                         .addDoing(mDoing);
                 int todayTotalTime = (int) ((System.currentTimeMillis() - today.getTimeInMillis()) / 1000);
 

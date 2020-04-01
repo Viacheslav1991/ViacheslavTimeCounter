@@ -39,14 +39,14 @@ public class StatisticDoingsLab {
     }
 
 
-    public DayDoings getDayStatisticListDoings(Calendar date) {
+    public DayDoings getDayDoings(Calendar date) {
         return new DayDoings(mContext, sDatabase, date);
     }
 
-    public DayDoings getDayStatisticListDoings(Integer i) {
+    public DayDoings getDayDoings(Integer i) {
         List<String> dates = new ArrayList<>(mDates);
         Calendar calendar = TimeHelper.getDateCalendar(dates.get(i));
-        return getDayStatisticListDoings(calendar);
+        return getDayDoings(calendar);
     }
 
 
@@ -86,7 +86,7 @@ public class StatisticDoingsLab {
     public List<StatisticList> getDays() {
         ArrayList<StatisticList> days = new ArrayList<>();
         for (int i = 0; i < getDates().size(); i++) {
-            days.add(getDayStatisticListDoings(i));
+            days.add(getDayDoings(i));
         }
         return days;
     }

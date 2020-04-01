@@ -19,7 +19,6 @@ import com.android.viacheslavtimecounter.model.DoingName;
 import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Calendar;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -104,7 +103,7 @@ public class CounterListFragment extends Fragment {
         if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
             Doing doing = StatisticDoingsLab
                     .getStatisticDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new MyCalendar())
+                    .getDayDoings(new MyCalendar())
                     .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
             mCallbacks.onDoingNameSelected(doing);
         }
@@ -181,7 +180,7 @@ public class CounterListFragment extends Fragment {
             mTitleTextView.setText(mDoingName.getTitle());
             mDoing = StatisticDoingsLab
                     .getStatisticDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new MyCalendar())
+                    .getDayDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle()); //get today's doing(may be move to adapter?)
             if (mDoing != null) {
                 mTotalTimeTextView.setText(TimeHelper.getTime(mDoing.getTotalTimeInt()));
@@ -203,7 +202,7 @@ public class CounterListFragment extends Fragment {
             if (mDoing == null) {
                 mDoing = new Doing(mDoingName.getTitle(), mDoingName.getColor());
                 StatisticDoingsLab.getStatisticDoingsLab(getActivity())
-                        .getDayStatisticListDoings(new MyCalendar())
+                        .getDayDoings(new MyCalendar())
                         .addDoing(mDoing);
             }
             String dateStr = TimeHelper.getDateString(new MyCalendar());

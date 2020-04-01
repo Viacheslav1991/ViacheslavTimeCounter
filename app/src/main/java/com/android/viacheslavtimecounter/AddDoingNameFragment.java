@@ -29,6 +29,11 @@ import petrov.kristiyan.colorpicker.ColorPicker;
 
 public class AddDoingNameFragment extends DialogFragment {
     private static final String ARG_DOING_NAME_TITLE = "doing_name_title";
+    protected static final String EXTRA_CHANGED_TIME =
+            "com.android.viacheslavtimecounter.changedtime";
+    public static final String ACTION_TOTAL_TIME_CHANGED =
+            "com.android.viacheslavtimecounter.TOTAL_TIME_CHANGED";
+
     private static final int REQUEST_TIME = 1;
     private static final String DIALOG_TIME = "DialogTime";
     private DoingName mDoingName;
@@ -68,7 +73,7 @@ public class AddDoingNameFragment extends DialogFragment {
         if (getArguments() != null && (title = (String) getArguments().getSerializable(ARG_DOING_NAME_TITLE)) != null) {
             mDoingName = DoingNameLab.getDoingNameLab(getActivity()).getDoingName(title);
             mDoing = StatisticDoingsLab.getStatisticDoingsLab(getActivity())
-                    .getDayStatisticListDoings(new MyCalendar())
+                    .getDayDoings(new MyCalendar())
                     .getDoing(mDoingName.getTitle());
             mDoingNameExisted = true;
         } else {
@@ -93,9 +98,9 @@ public class AddDoingNameFragment extends DialogFragment {
 
         mChangeTimeButton = view.findViewById(R.id.time_button);
 
-        if (mDoing != null &&
-                !mDoing.getId().equals(LastStartedDoingPreferences
-                        .getStartedDoingID(getActivity()))) {//We can't change running activity
+        if (mDoing != null
+                /*&& !mDoing.getId().equals(LastStartedDoingPreferences
+                        .getStartedDoingID(getActivity()))*/) {//We can't change running activity
             final int totalTime = mDoing.getTotalTimeInt();
             mChangeTimeButton.setText(TimeHelper.getTime(totalTime));
             mChangeTimeButton.setOnClickListener(v -> {
@@ -173,7 +178,7 @@ public class AddDoingNameFragment extends DialogFragment {
                         mDoing.setTitle(mDoingName.getTitle());
                         mDoing.setColor(mDoingName.getColor());
                         StatisticDoingsLab.getStatisticDoingsLab(getActivity())
-                                .getDayStatisticListDoings(new MyCalendar())
+                                .getDayDoings(new MyCalendar())
                                 .updateDoing(mDoing);
                     }
                     mAlertDialog.cancel();
@@ -203,6 +208,12 @@ public class AddDoingNameFragment extends DialogFragment {
         }
         if (requestCode == REQUEST_TIME) {
             int timeSec = (int) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME_INT);
+
+            if (mDoing.getId().equals(LastStartedDoingPreferences.getStartedDoingID(getActivity()))) {
+                Intent intent = new Intent(ACTION_TOTAL_TIME_CHANGED);
+                intent.putExtra(EXTRA_CHANGED_TIME, timeSec);
+                Objects.requireNonNull(getActivity()).sendBroadcast(intent);
+            }
 
             mDoing.setTotalTimeInt(timeSec);
             mChangeTimeButton.setText(TimeHelper.getTime(timeSec));

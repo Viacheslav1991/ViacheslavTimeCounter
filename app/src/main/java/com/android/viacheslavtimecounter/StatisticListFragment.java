@@ -162,7 +162,7 @@ public class StatisticListFragment extends Fragment {
                 for (int i = 0; i < StatisticDoingsLab.getStatisticDoingsLab(getActivity()).getDays().size(); i++) {
                     DayDoings list = StatisticDoingsLab
                             .getStatisticDoingsLab(getActivity())
-                            .getDayStatisticListDoings(i);
+                            .getDayDoings(i);
                     if (TimeHelper.compareDate(list.getDate(), calendar)) {
                         mCallbacks.onDateSelected(i);
                     }
