@@ -31,7 +31,7 @@ public class StatisticDoingsLab {
         updateStatisticDates();
     }
 
-    public static StatisticDoingsLab getStatisticDoingsLab(Context context) {
+    public static synchronized StatisticDoingsLab getStatisticDoingsLab(Context context) {
         if (sStatisticDoingsLab == null) {
             sStatisticDoingsLab = new StatisticDoingsLab(context);
         }

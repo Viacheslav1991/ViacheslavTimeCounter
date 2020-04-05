@@ -1,9 +1,17 @@
 package com.android.viacheslavtimecounter;
 
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.session.MediaSession;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.android.viacheslavtimecounter.model.StatisticDoingsLab;
@@ -20,9 +29,12 @@ import com.android.viacheslavtimecounter.model.DoingNameLab;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,12 +42,18 @@ import androidx.recyclerview.widget.RecyclerView;
 // update statistic before opening of one!!!!!!!!!!!!!!!!!!!
 public class CounterListFragment extends Fragment {
     private static final String ADAPTER_POSITION = "adapter_position";
+    // Идентификатор уведомления
+    private static final int NOTIFY_ID = 101;
+
+    // Идентификатор канала
+    private static String CHANNEL_ID = "Current doing channel";
 
     private RecyclerView mRecyclerView;
     private CountAdapter mCountAdapter;
     private FloatingActionButton fab;
     private Callbacks mCallbacks;
     private int mHolderPosition;
+    private Activity mActivity;
 
     public interface Callbacks {
         void onDoingNameSelected(Doing doing);
@@ -49,8 +67,8 @@ public class CounterListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallbacks = (Callbacks) context;
+        mActivity = (Activity) context;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,11 +95,11 @@ public class CounterListFragment extends Fragment {
             case R.id.show_statistic_day:
                 StatisticDoingsLab.getStatisticDoingsLab(getActivity()).updateStatisticDates();
 //                Intent intent = new Intent(getActivity(), StatisticPagerActivity.class);
-                Intent intent = StatisticPagerActivity.newIntent(getActivity(),StatisticPagerActivity.TYPE_STATISTIC_DAY);
+                Intent intent = StatisticPagerActivity.newIntent(getActivity(), StatisticPagerActivity.TYPE_STATISTIC_DAY);
                 startActivity(intent);
                 return true;
             case R.id.show_statistic_week:
-                intent = StatisticPagerActivity.newIntent(getActivity(),StatisticPagerActivity.TYPE_STATISTIC_WEEK);
+                intent = StatisticPagerActivity.newIntent(getActivity(), StatisticPagerActivity.TYPE_STATISTIC_WEEK);
                 startActivity(intent);
                 return true;
             default:
@@ -98,13 +116,17 @@ public class CounterListFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(v -> mCallbacks.onNewDoingName());
+        fab.setOnClickListener(v -> {
+            mCallbacks.onNewDoingName();
+        });
+
 
         if (LastStartedDoingPreferences.getStartedDoingID(getActivity()) != null) {
             Doing doing = StatisticDoingsLab
                     .getStatisticDoingsLab(getActivity())
                     .getDayDoings(new MyCalendar())
-                    .getDoing(LastStartedDoingPreferences.getStartedDoingID(getActivity()));
+                    .getDoing(Objects.requireNonNull(LastStartedDoingPreferences.getStartedDoingID(mActivity)));
+            showNotification(doing);
             mCallbacks.onDoingNameSelected(doing);
         }
 
@@ -205,11 +227,15 @@ public class CounterListFragment extends Fragment {
                         .getDayDoings(new MyCalendar())
                         .addDoing(mDoing);
             }
+
+
             String dateStr = TimeHelper.getDateString(new MyCalendar());
             LastStartedDoingPreferences.setStartTime(getActivity(), System.currentTimeMillis()
                     , mDoing.getId(), mDoing.getTotalTimeInt(), dateStr);
 
             mCallbacks.onDoingNameSelected(mDoing);
+
+            showNotification(mDoing);
             updateUI();
         }
 
@@ -237,6 +263,51 @@ public class CounterListFragment extends Fragment {
             return false;
         }
 
+    }
+
+    private void showNotification(Doing doing) {
+        Intent notificationIntent = new Intent(mActivity, mActivity.getClass());
+        PendingIntent contentIntent = PendingIntent.getActivity(mActivity,
+                0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        RemoteViews remoteViews = new RemoteViews(mActivity.getPackageName(), R.layout.notification);
+        remoteViews.setTextViewText(R.id.notificationTextView, "Custom notification text");
+        remoteViews.setTextColor(R.id.notificationTextView, doing.getColor());
+        remoteViews.setOnClickPendingIntent(R.id.root, contentIntent);
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mActivity)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setOnlyAlertOnce(true)
+                .setContentTitle(doing.getTitle())
+                .setPriority(Notification.PRIORITY_MAX)
+                .setWhen(LastStartedDoingPreferences.getStartTimeMillis(mActivity))
+                .setUsesChronometer(true)
+                .setOngoing(true)
+                .setColor(doing.getColor())
+//                .setCustomContentView(remoteViews)
+//                .setStyle(new Notification.DecoratedCustomViewStyle())
+                .setContentIntent(contentIntent);
+
+
+//                .setColorized(true);
+//                .setContent(remoteViews);
+
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(mActivity);
+        // === Removed some obsoletes
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "Your_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channelId);
+        }
+
+        notificationManager.notify(NOTIFY_ID, builder.build());
     }
 
 }

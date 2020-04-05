@@ -44,7 +44,7 @@ public class CounterFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "onReceive: " + intent.getExtras().get(AddDoingNameFragment.EXTRA_CHANGED_TIME));
-            mTotalTime = (int) intent.getExtras().get(AddDoingNameFragment.EXTRA_CHANGED_TIME);
+            mTotalTime = (int) intent.getExtras().get(AddDoingNameFragment.EXTRA_CHANGED_TIME) - mCurrentTime;
         }
     };
 
