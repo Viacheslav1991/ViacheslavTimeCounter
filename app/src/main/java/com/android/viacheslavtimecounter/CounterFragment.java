@@ -116,10 +116,13 @@ public class CounterFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
+    public void onPause() {
         updateDoing();
-        super.onStop();
+        super.onPause();
     }
+
+
+
 
     @Override
     public void onDestroy() {
@@ -136,7 +139,7 @@ public class CounterFragment extends Fragment {
                 mCurrentTimeTextView.setText(TimeHelper.getTime(mCurrentTime++));
 
                 checkDate();
-                updateDoing();
+//                updateDoing();
 
             });
         }
