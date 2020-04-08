@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class CounterFragment extends Fragment {
+    //this last version
     private static final String ARG_DOING_ID = "doing_id";
     private static final String TAG = "CounterFragment";
     private Doing mDoing;
